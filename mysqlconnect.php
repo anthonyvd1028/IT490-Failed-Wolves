@@ -1,7 +1,7 @@
 #!/usr/bin/php
 <?php
 
-$mydb = new mysqli('127.0.0.1','root','12345','testdb');
+$mydb = new mysqli('127.0.0.1','avd8','12345','testdb');
 
 if ($mydb->errno != 0)
 {
@@ -21,5 +21,11 @@ if ($mydb->errno != 0)
 	exit(0);
 }
 
-
+if ($response->num_rows > 0)
+{
+	while ($row = $response->fetch_assoc())
+	{
+		echo "ID: " . $row["ID"] . " - Last Name: " . $row["LastName"] . " - First Name: " . $row["FirstName"] . " - Address: " . $row["Address"] . "\n";
+	}
+}
 ?>
