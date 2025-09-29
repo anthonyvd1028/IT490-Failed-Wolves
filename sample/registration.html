@@ -1,0 +1,48 @@
+<html>
+<script>
+function HandleRegistrationResponse(response)
+{
+    var text = JSON.parse(response);
+    console.log(text);
+	document.getElementById("textResponse").innerHTML = "<p>response: " + JSON.stringify(text) + "</p>";
+
+}
+
+function SendRegistrationRequest()
+{
+    var username = document.getElementById("uname").value;
+    var password = document.getElementById("pword").value;
+    var password2 = document.getElementById("pword2").value;
+	console.log(password2);
+    var request = new XMLHttpRequest();
+    request.open("POST","registration.php",true);
+    request.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+    request.onreadystatechange= function ()
+    {
+	if ((this.readyState == 4)&&(this.status == 200))
+        {
+            HandleRegistrationResponse(this.responseText);
+        } 
+    }
+    request.send("type=registration&uname="+username+"&pword="+password+"&pword2="+password2);
+}
+</script>
+
+<h1>Registration page</h1>
+<body>
+    <label for="uname">Username:</label>
+    <input type="text" id="uname" name="uname"><br><br>
+
+    <label for="pword">Password:</label>
+    <input type="password" id="pword" name="pword"><br><br>
+    
+    <label for="pword2">Confirm Password:</label>
+    <input type="password" id="pword2" name="pword2"><br><br>
+
+    <button onclick="SendRegistrationRequest()">Login</button>
+
+    <div id="textResponse">
+        awaiting response
+    </div>
+</body>
+</html>
