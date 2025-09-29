@@ -6,10 +6,30 @@ require_once('rabbitMQLib.inc');
 
 function doLogin($username,$password)
 {
-    // lookup username in databas
-    // check password
-    return true;
-    //return false if not valid
+	// lookup username in databas
+	$mydb = new mysqli('127.0.0.1' , 'admin' , 'AdminPass123!' , 'IT_490');
+
+	if ($mydb->connect_errno != 0) {
+		echo "Failed to connect to database: " . $mydb->connect_error . PHP_EOL;
+		exit(0);
+	}
+
+	echo "Succesfully connected to database".PHP_EOL;
+
+	//prepare and execute query
+	$query = "SELECT password FROM users WHERE username='" . $username . "';";
+
+	$response = $mydb->query($query);
+	if ($response->num_rows > 0)
+	{
+		if($password == $response->fetch_assoc()["password"])
+		{
+			//echo "true";
+			return true;
+		}
+	}
+ 	//echo "false";
+	return false; //user not found
 }
 
 function requestProcessor($request)
@@ -23,7 +43,7 @@ function requestProcessor($request)
   switch ($request['type'])
   {
     case "login":
-      return doLogin($request['username'],$request['password']);
+        return doLogin($request['username'],$request['password']);
     case "validate_session":
       return doValidate($request['sessionId']);
   }
