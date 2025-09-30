@@ -63,7 +63,7 @@ function doRegister($username,$password,$password2)
 		return array("returnCode" => '3', "message" => "User already exists");
         }
 	$insert = "INSERT INTO users (username, password) VALUES ('" . $username . "', '" . $password . "');";
-	$insertresp = $mydb->query($insert);
+	$insertResp = $mydb->query($insert);
 	if ($mydb->errno != 0) {
         echo "failed to execute insert query:" . PHP_EOL;
         exit(0);
