@@ -90,7 +90,7 @@ function requestProcessor($request)
     case "validate_session":
 	    return doValidate($request['sessionId']);
     case "register":
-	    return doRegister($request['username'],$request['password'],$request['password']);
+	    return doRegister($request['username'],$request['password'],$request['password2']);
   }
   return array("returnCode" => '0', 'message'=>"Server received request and processed");
 }
