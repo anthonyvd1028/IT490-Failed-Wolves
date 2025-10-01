@@ -21,11 +21,20 @@ case "login":
 	$rabbitRequest['username'] = $request["uname"];
 	$rabbitRequest['password'] = $request["pword"];
 	$response = $client->send_request($rabbitRequest);
+	echo json_encode(array("message" => $response["message"], "sessionId" => $response["sessionId"]));
+	break;
+
+case "registration":
+        $rabbitRequest = array();
+        $rabbitRequest['type'] = "registration";
+        $rabbitRequest['username'] = $request["uname"];
+        $rabbitRequest['password'] = $request["pword"];
+        $rabbitRequest['password2'] = $request["pword2"];
+        $response = $client->send_request($rabbitRequest);
+	echo json_encode(array('message' => $response["message"]));
 	break;
 }
- 
-echo json_encode($response["message"]);
+
 exit(0);
 
-?>
-
+?> 
