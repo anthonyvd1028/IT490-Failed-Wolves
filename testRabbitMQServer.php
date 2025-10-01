@@ -50,7 +50,7 @@ function doRegister($username,$password,$password2)
         	return array("returnCode" => '4', "message" => "Passwords do not match");
    	}
 
-        $query = "SELECT username  FROM users WHERE username='" . $username . "';";
+        $query = "SELECT username FROM users WHERE username='" . $username . "';";
 
         $response = $mydb->query($query);
         if ($mydb->errno != 0)
@@ -61,7 +61,8 @@ function doRegister($username,$password,$password2)
         if ($response->num_rows > 0)
         {
 		return array("returnCode" => '3', "message" => "User already exists");
-        }
+	}
+
 	$insert = "INSERT INTO users (username, password) VALUES ('" . $username . "', '" . $password . "');";
 	$insertResp = $mydb->query($insert);
 	if ($mydb->errno != 0) {
@@ -89,7 +90,7 @@ function requestProcessor($request)
         return doLogin($request['username'],$request['password']);
     case "validate_session":
 	    return doValidate($request['sessionId']);
-    case "register":
+    case "registration":
 	    return doRegister($request['username'],$request['password'],$request['password2']);
   }
   return array("returnCode" => '0', 'message'=>"Server received request and processed");
