@@ -2,8 +2,8 @@
 <script>
 function HandleRegistrationResponse(response)
 {
-    var text = JSON.parse(response);
-	document.getElementById("textResponse").innerHTML = "<p>response: " + JSON.stringify(text) + "</p>";
+    	var text = JSON.parse(response).message;
+	document.getElementById("textResponse").innerHTML = "<p>response: " + text + "</p>";
 
 }
 
@@ -14,7 +14,7 @@ function SendRegistrationRequest()
     var password2 = document.getElementById("pword2").value;
     
     var request = new XMLHttpRequest();
-    request.open("POST","registration.php",true);
+    request.open("POST","message.php",true);
     request.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
     request.onreadystatechange= function ()
     {
