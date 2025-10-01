@@ -4,6 +4,49 @@ require_once('path.inc');
 require_once('get_host_info.inc');
 require_once('rabbitMQLib.inc');
 
+function createSession($id, $username)
+{
+        $mydb = new mysqli('127.0.0.1' , 'admin' , 'AdminPass123!' , 'IT_490');
+
+        if ($mydb->connect_errno != 0) {
+                echo "Failed to connect to database: " . $mydb->connect_error . PHP_EOL;
+                exit(0);
+        }
+        $query = "SELECT session_token FROM sessions WHERE username='" . $username . "';";
+
+        $response = $mydb->query($query);
+        if ($mydb->errno != 0)
+        {
+                echo "failed to execute query:" . PHP_EOL;
+                exit(0);
+        }
+
+        if ($response->num_rows > 0)
+        {
+                $old_token = $response->fetch_assoc()['session_token'];
+
+                $query = "DELETE FROM sessions WHERE session_token='" . $old_token . "';";
+
+                $response = $mydb->query($query);
+                if ($mydb->errno != 0)
+                {
+                        echo "failed to execute query:" . PHP_EOL;
+                        exit(0);
+                }
+        }
+
+        $new_token = hash('sha256', $id . random_int(0,1000));
+        $query = "INSERT INTO sessions (session_token, username, expiration) VALUES ('" . $new_token . "', '" . $username . "', DATE_ADD(NOW(), INTERVAL 1 HOUR));";
+
+        $response = $mydb->query($query);
+        if ($mydb->errno != 0)
+        {
+                echo "failed to execute query:" . PHP_EOL;
+                exit(0);
+        }
+        return $new_token;
+}
+
 function doLogin($username,$password)
 {
 	$mydb = new mysqli('127.0.0.1' , 'admin' , 'AdminPass123!' , 'IT_490');
@@ -15,7 +58,7 @@ function doLogin($username,$password)
 
 	echo "Succesfully connected to database".PHP_EOL;
 
-	$query = "SELECT password FROM users WHERE username='" . $username . "';";
+	$query = "SELECT password, id FROM users WHERE username='" . $username . "';";
 
 	$response = $mydb->query($query);
 	if ($mydb->errno != 0)
@@ -25,9 +68,11 @@ function doLogin($username,$password)
 	}
 	if ($response->num_rows > 0)
 	{
-		if($password == $response->fetch_assoc()["password"])
+		$response = $response->fetch_assoc();
+		if($password == $response["password"])
 		{
-		return array("returnCode" => '1', 'message'=>"Authenticated");
+		$id = createSession($response['id'], $username);	
+		return array("returnCode" => '1', 'message'=>"Authenticated", 'sessionId' => $id);
 			//return true;
 		}
 	}
