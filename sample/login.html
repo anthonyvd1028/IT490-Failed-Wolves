@@ -2,9 +2,13 @@
 <script>
 function HandleLoginResponse(response)
 {
-	var text = JSON.parse(response);
-	document.getElementById("textResponse").innerHTML = "<p>response: " + JSON.stringify(text) + "</p>";
-
+	var text = JSON.parse(response).message;
+	var session = JSON.parse(response).sessionId;
+	document.getElementById("textResponse").innerHTML = "<p>response: " + text + "</p>";
+	if (session !== null)
+	{
+		document.cookie = "sessionId=" + session + ";path=/";
+	}
 }
 
 function SendLoginRequest()
@@ -13,7 +17,7 @@ function SendLoginRequest()
     var password = document.getElementById("pword").value;
     
     var request = new XMLHttpRequest();
-    request.open("POST","login.php",true);
+    request.open("POST","message.php",true);
     request.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
     request.onreadystatechange= function ()
     {
