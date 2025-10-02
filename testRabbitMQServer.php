@@ -52,7 +52,8 @@ function doLogin($username,$password)
     }
     if ($response->num_rows > 0) {
         $response = $response->fetch_assoc();
-        if($password == $response["password"]) {
+	$password =  hash('sha256', $password);
+	if($password == $response["password"]) {
             $id = createSession($response['id'], $username);    
             return array("returnCode" => '1', 'message'=>"Authenticated", 'sessionId' => $id);
         }
@@ -80,6 +81,9 @@ function doRegister($username,$password,$password2)
     if ($response->num_rows > 0) {
         return array("returnCode" => '3', "message" => "User already exists");
     }
+
+    $password = hash('sha256', $password);
+
     $insert = "INSERT INTO users (username, password) VALUES ('" . $username . "', '" . $password . "');";
     $insertResp = $mydb->query($insert);
     if ($mydb->errno != 0) {
@@ -99,30 +103,38 @@ function validateSession($sessionId)
         echo "Failed to connect to database: " . $mydb->connect_error . PHP_EOL;
         exit(0);
     }
+    
     $stmt = $mydb->prepare("SELECT username, expiration FROM sessions WHERE session_token = ? LIMIT 1");
     if (!$stmt) {
         echo "failed to prepare statement:" . PHP_EOL;
         exit(0);
     }
+
     $stmt->bind_param('s', $sessionId);
     $stmt->execute();
     $res = $stmt->get_result();
+    
     if ($res->num_rows === 0) {
         $stmt->close();
-        return array("returnCode" => '2', "message" => "Invalid session");
-    }
-    $row = $res->fetch_assoc();
-    $stmt->close();
-    $now = new DateTime("now", new DateTimeZone("UTC"));
-    $exp = new DateTime($row['expiration'], new DateTimeZone("UTC"));
-    if ($exp <= $now) {
-        return array("returnCode" => '3', "message" => "Session expired");
-    }
-    return array(
-        "returnCode" => '1',
-        "message"    => "Valid session",
-        "username"   => $row['username']
-    );
+	return array("returnCode" => '2', "message" => "Invalid session", "valid" => false);
+    } else {
+    	$row = $res->fetch_assoc();
+    	$stmt->close();
+    	date_default_timezone_set("America/New_York"); 
+    
+    	$exp = strtotime($row['expiration']);
+    	$now = time();
+
+    	if ($exp <= $now) {
+    	    return array("returnCode" => '3', "message" => "Session expired", "valid" => false);
+    	}
+    
+    	return array(
+        	"returnCode" => '1',
+        	"message"    => "Valid session",
+        	"valid"	     => true
+    	);
+     }
 }
 
 function requestProcessor($request)
@@ -136,7 +148,6 @@ function requestProcessor($request)
     case "login":
         return doLogin($request['username'],$request['password']);
     case "validate_session":
-    case "validateSession":
         return validateSession($request['sessionId']);
     case "registration":
         return doRegister($request['username'],$request['password'],$request['password2']);
