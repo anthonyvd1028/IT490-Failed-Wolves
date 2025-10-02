@@ -6,137 +6,140 @@ require_once('rabbitMQLib.inc');
 
 function createSession($id, $username)
 {
-        $mydb = new mysqli('127.0.0.1' , 'admin' , 'AdminPass123!' , 'IT_490');
-
-        if ($mydb->connect_errno != 0) {
-                echo "Failed to connect to database: " . $mydb->connect_error . PHP_EOL;
-                exit(0);
-        }
-        $query = "SELECT session_token FROM sessions WHERE username='" . $username . "';";
-
+    $mydb = new mysqli('127.0.0.1' , 'admin' , 'AdminPass123!' , 'IT_490');
+    if ($mydb->connect_errno != 0) {
+        echo "Failed to connect to database: " . $mydb->connect_error . PHP_EOL;
+        exit(0);
+    }
+    $query = "SELECT session_token FROM sessions WHERE username='" . $username . "';";
+    $response = $mydb->query($query);
+    if ($mydb->errno != 0) {
+        echo "failed to execute query:" . PHP_EOL;
+        exit(0);
+    }
+    if ($response->num_rows > 0) {
+        $old_token = $response->fetch_assoc()['session_token'];
+        $query = "DELETE FROM sessions WHERE session_token='" . $old_token . "';";
         $response = $mydb->query($query);
-        if ($mydb->errno != 0)
-        {
-                echo "failed to execute query:" . PHP_EOL;
-                exit(0);
+        if ($mydb->errno != 0) {
+            echo "failed to execute query:" . PHP_EOL;
+            exit(0);
         }
-
-        if ($response->num_rows > 0)
-        {
-                $old_token = $response->fetch_assoc()['session_token'];
-
-                $query = "DELETE FROM sessions WHERE session_token='" . $old_token . "';";
-
-                $response = $mydb->query($query);
-                if ($mydb->errno != 0)
-                {
-                        echo "failed to execute query:" . PHP_EOL;
-                        exit(0);
-                }
-        }
-
-        $new_token = hash('sha256', $id . random_int(0,1000));
-        $query = "INSERT INTO sessions (session_token, username, expiration) VALUES ('" . $new_token . "', '" . $username . "', DATE_ADD(NOW(), INTERVAL 1 HOUR));";
-
-        $response = $mydb->query($query);
-        if ($mydb->errno != 0)
-        {
-                echo "failed to execute query:" . PHP_EOL;
-                exit(0);
-        }
-        return $new_token;
+    }
+    $new_token = hash('sha256', $id . random_int(0,1000));
+    $query = "INSERT INTO sessions (session_token, username, expiration) VALUES ('" . $new_token . "', '" . $username . "', DATE_ADD(NOW(), INTERVAL 1 HOUR));";
+    $response = $mydb->query($query);
+    if ($mydb->errno != 0) {
+        echo "failed to execute query:" . PHP_EOL;
+        exit(0);
+    }
+    return $new_token;
 }
 
 function doLogin($username,$password)
 {
-	$mydb = new mysqli('127.0.0.1' , 'admin' , 'AdminPass123!' , 'IT_490');
-
-	if ($mydb->connect_errno != 0) {
-		echo "Failed to connect to database: " . $mydb->connect_error . PHP_EOL;
-		exit(0);
-	}
-
-	echo "Succesfully connected to database".PHP_EOL;
-
-	$query = "SELECT password, id FROM users WHERE username='" . $username . "';";
-
-	$response = $mydb->query($query);
-	if ($mydb->errno != 0)
-	{
-		echo "failed to execute query:" . PHP_EOL;
-		exit(0);
-	}
-	if ($response->num_rows > 0)
-	{
-		$response = $response->fetch_assoc();
-		if($password == $response["password"])
-		{
-		$id = createSession($response['id'], $username);	
-		return array("returnCode" => '1', 'message'=>"Authenticated", 'sessionId' => $id);
-			//return true;
-		}
-	}
-	return array("returnCode" => '2', 'message'=>"Not authenticated");
-	//return false;
+    $mydb = new mysqli('127.0.0.1' , 'admin' , 'AdminPass123!' , 'IT_490');
+    if ($mydb->connect_errno != 0) {
+        echo "Failed to connect to database: " . $mydb->connect_error . PHP_EOL;
+        exit(0);
+    }
+    echo "Succesfully connected to database".PHP_EOL;
+    $query = "SELECT password, id FROM users WHERE username='" . $username . "';";
+    $response = $mydb->query($query);
+    if ($mydb->errno != 0) {
+        echo "failed to execute query:" . PHP_EOL;
+        exit(0);
+    }
+    if ($response->num_rows > 0) {
+        $response = $response->fetch_assoc();
+        if($password == $response["password"]) {
+            $id = createSession($response['id'], $username);    
+            return array("returnCode" => '1', 'message'=>"Authenticated", 'sessionId' => $id);
+        }
+    }
+    return array("returnCode" => '2', 'message'=>"Not authenticated");
 }
 
 function doRegister($username,$password,$password2)
 {
-        $mydb = new mysqli('127.0.0.1' , 'admin' , 'AdminPass123!' , 'IT_490');
-
-        if ($mydb->connect_errno != 0) {
-                echo "Failed to connect to database: " . $mydb->connect_error . PHP_EOL;
-                exit(0);
-        }
-
-	echo "Succesfully connected to database".PHP_EOL;
-
-   	if ($password !== $password2) {
-        	return array("returnCode" => '4', "message" => "Passwords do not match");
-   	}
-
-        $query = "SELECT username FROM users WHERE username='" . $username . "';";
-
-        $response = $mydb->query($query);
-        if ($mydb->errno != 0)
-        {
-                echo "failed to execute query:" . PHP_EOL;
-                exit(0);
-        }
-        if ($response->num_rows > 0)
-        {
-		return array("returnCode" => '3', "message" => "User already exists");
-	}
-
-	$insert = "INSERT INTO users (username, password) VALUES ('" . $username . "', '" . $password . "');";
-	$insertResp = $mydb->query($insert);
-	if ($mydb->errno != 0) {
+    $mydb = new mysqli('127.0.0.1' , 'admin' , 'AdminPass123!' , 'IT_490');
+    if ($mydb->connect_errno != 0) {
+        echo "Failed to connect to database: " . $mydb->connect_error . PHP_EOL;
+        exit(0);
+    }
+    echo "Succesfully connected to database".PHP_EOL;
+    if ($password !== $password2) {
+        return array("returnCode" => '4', "message" => "Passwords do not match");
+    }
+    $query = "SELECT username FROM users WHERE username='" . $username . "';";
+    $response = $mydb->query($query);
+    if ($mydb->errno != 0) {
+        echo "failed to execute query:" . PHP_EOL;
+        exit(0);
+    }
+    if ($response->num_rows > 0) {
+        return array("returnCode" => '3', "message" => "User already exists");
+    }
+    $insert = "INSERT INTO users (username, password) VALUES ('" . $username . "', '" . $password . "');";
+    $insertResp = $mydb->query($insert);
+    if ($mydb->errno != 0) {
         echo "failed to execute insert query:" . PHP_EOL;
         exit(0);
-	}
-	if ($insertResp === TRUE) {
+    }
+    if ($insertResp === TRUE) {
         return array("returnCode" => '1', "message" => "You have successfully registered");
-	}
-	return array("returnCode" => '2', 'message'=>"Registration failed");
-        //return false;
+    }
+    return array("returnCode" => '2', 'message'=>"Registration failed");
+}
+
+function validateSession($sessionId)
+{
+    $mydb = new mysqli('127.0.0.1' , 'admin' , 'AdminPass123!' , 'IT_490');
+    if ($mydb->connect_errno != 0) {
+        echo "Failed to connect to database: " . $mydb->connect_error . PHP_EOL;
+        exit(0);
+    }
+    $stmt = $mydb->prepare("SELECT username, expiration FROM sessions WHERE session_token = ? LIMIT 1");
+    if (!$stmt) {
+        echo "failed to prepare statement:" . PHP_EOL;
+        exit(0);
+    }
+    $stmt->bind_param('s', $sessionId);
+    $stmt->execute();
+    $res = $stmt->get_result();
+    if ($res->num_rows === 0) {
+        $stmt->close();
+        return array("returnCode" => '2', "message" => "Invalid session");
+    }
+    $row = $res->fetch_assoc();
+    $stmt->close();
+    $now = new DateTime("now", new DateTimeZone("UTC"));
+    $exp = new DateTime($row['expiration'], new DateTimeZone("UTC"));
+    if ($exp <= $now) {
+        return array("returnCode" => '3', "message" => "Session expired");
+    }
+    return array(
+        "returnCode" => '1',
+        "message"    => "Valid session",
+        "username"   => $row['username']
+    );
 }
 
 function requestProcessor($request)
 {
   echo "received request".PHP_EOL;
   var_dump($request);
-  if(!isset($request['type']))
-  {
+  if(!isset($request['type'])) {
     return "ERROR: unsupported message type";
   }
-  switch ($request['type'])
-  {
+  switch ($request['type']) {
     case "login":
         return doLogin($request['username'],$request['password']);
     case "validate_session":
-	    return doValidate($request['sessionId']);
+    case "validateSession":
+        return validateSession($request['sessionId']);
     case "registration":
-	    return doRegister($request['username'],$request['password'],$request['password2']);
+        return doRegister($request['username'],$request['password'],$request['password2']);
   }
   return array("returnCode" => '0', 'message'=>"Server received request and processed");
 }
@@ -148,4 +151,3 @@ $server->process_requests('requestProcessor');
 echo "testRabbitMQServer END".PHP_EOL;
 exit();
 ?>
-
