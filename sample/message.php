@@ -33,6 +33,14 @@ case "registration":
         $response = $client->send_request($rabbitRequest);
 	echo json_encode(array('message' => $response["message"]));
 	break;
+
+case "validateSession":
+	$rabbitRequest = array();
+        $rabbitRequest['type'] = "validate_session";
+        $rabbitRequest['sessionId'] = $request["sessionId"];
+        $response = $client->send_request($rabbitRequest);
+	echo json_encode(array('message' => $response["message"], 'valid' => $response['valid']));
+	break;
 }
 
 exit(0);
