@@ -8,6 +8,7 @@ function HandleLoginResponse(response)
 	if (session !== null)
 	{
 		document.cookie = "sessionId=" + session + ";path=/";
+		window.location.href = "http://www.sample.com/";
 	}
 }
 

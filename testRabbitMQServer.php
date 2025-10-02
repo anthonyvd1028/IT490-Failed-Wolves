@@ -56,9 +56,11 @@ function doLogin($username,$password)
 	if($password == $response["password"]) {
             $id = createSession($response['id'], $username);    
             return array("returnCode" => '1', 'message'=>"Authenticated", 'sessionId' => $id);
-        }
+	} else {
+	    return array("returnCode" => '2', 'message'=>"Invalid password");
+	}
     }
-    return array("returnCode" => '2', 'message'=>"Not authenticated");
+    return array("returnCode" => '2', 'message'=>"Invalid Username or Password");
 }
 
 function doRegister($username,$password,$password2)
