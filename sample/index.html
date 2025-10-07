@@ -5,17 +5,7 @@
 	</style>
 	<script>
 		window.onload = function () {
-			function getCookie(name) {
-				const cookies = document.cookie.split(";");
-				for (let cookie of cookies) {
-					let [key, value] = cookie.trim().split("=");
-					if (key === name) {
-						return value;
-					}
-				}
-			}
-			
-			var sessionId = getCookie("sessionId");	
+			let sessionId = sessionStorage.getItem("sessionId")
 			if (!sessionId)
 			{
 				window.location.href = "http://www.sample.com/login.html";

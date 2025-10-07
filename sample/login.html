@@ -7,7 +7,7 @@ function HandleLoginResponse(response)
 	document.getElementById("textResponse").innerHTML = "<p>response: " + text + "</p>";
 	if (session !== null)
 	{
-		document.cookie = "sessionId=" + session + ";path=/";
+		sessionStorage.setItem("sessionId", session);
 		window.location.href = "http://www.sample.com/";
 	}
 }
