@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login</title>
+  <link rel="stylesheet" href="style.css">
+  <script>
+    function HandleLoginResponse(response) {
+      var text = JSON.parse(response).message;
+      var session = JSON.parse(response).sessionId;
+      document.getElementById("textResponse").innerHTML = "<p>response: " + text + "</p>";
+      if (session !== null) {
+        sessionStorage.setItem("sessionId", session);
+        window.location.href = "http://www.sample.com/";
+      }
+    }
+
+    function SendLoginRequest() {
+      var username = document.getElementById("uname").value;
+      var password = document.getElementById("pword").value;
+      var request = new XMLHttpRequest();
+      request.open("POST","message.php",true);
+      request.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+      request.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+          HandleLoginResponse(this.responseText);
+        }
+      };
+      request.send("type=login&uname=" + username + "&pword=" + password);
+    }
+  </script>
+</head>
+<body>
+  <nav class="navbar">
+    <h2>failedwolves.</h2>
+    <ul class="nav-links">
+      <li><a href="#" class="disabled">Login</a></li>
+      <li><a href="registration.html">Register</a></li>
+    </ul>
+  </nav>
+
+  <div class="container">
+    <div class="card">
+
+      <h1>Login</h1>
+
+      <label for="uname">Username:</label>
+      <input type="text" id="uname" name="uname">
+
+      <label for="pword">Password:</label>
+      <input type="password" id="pword" name="pword">
+
+      <button onclick="SendLoginRequest()">Login</button>
+
+      <div id="textResponse"></div>
+
+    </div>
+  </div>
+</body>
+</html>
+
