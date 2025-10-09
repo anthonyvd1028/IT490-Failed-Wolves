@@ -1,47 +1,61 @@
-<html>
-<script>
-function HandleRegistrationResponse(response)
-{
-    	var text = JSON.parse(response).message;
-	document.getElementById("textResponse").innerHTML = "<p>response: " + text + "</p>";
-
-}
-
-function SendRegistrationRequest()
-{
-    var username = document.getElementById("uname").value;
-    var password = document.getElementById("pword").value;
-    var password2 = document.getElementById("pword2").value;
-    
-    var request = new XMLHttpRequest();
-    request.open("POST","message.php",true);
-    request.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
-    request.onreadystatechange= function ()
-    {
-	if ((this.readyState == 4)&&(this.status == 200))
-        {
-            HandleRegistrationResponse(this.responseText);
-        } 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register</title>
+  <link rel="stylesheet" href="style.css">
+  <script>
+    function HandleRegistrationResponse(response) {
+      var text = JSON.parse(response).message;
+      document.getElementById("textResponse").innerHTML = "<p>response: " + text + "</p>";
     }
-    request.send("type=registration&uname="+username+"&pword="+password+"&pword2="+password2);
-}
-</script>
 
-<h1>Registration page</h1>
+    function SendRegistrationRequest() {
+      var username = document.getElementById("uname").value;
+      var password = document.getElementById("pword").value;
+      var password2 = document.getElementById("pword2").value;
+
+      var request = new XMLHttpRequest();
+      request.open("POST","message.php",true);
+      request.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+      request.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+          HandleRegistrationResponse(this.responseText);
+        }
+      };
+      request.send("type=registration&uname=" + username + "&pword=" + password + "&pword2=" + password2);
+    }
+  </script>
+</head>
 <body>
-    <label for="uname">Username:</label>
-    <input type="text" id="uname" name="uname"><br><br>
+  <nav class="navbar">
+    <h2>failedwolves.</h2>
+    <ul class="nav-links">
+      <li><a href="login.html">Login</a></li>
+      <li><a href="#" class="disabled">Register</a></li>
+    </ul>
+  </nav>
 
-    <label for="pword">Password:</label>
-    <input type="password" id="pword" name="pword"><br><br>
-    
-    <label for="pword2">Confirm Password:</label>
-    <input type="password" id="pword2" name="pword2"><br><br>
+  <div class="container">
+    <div class="card">
+      <h1>Register</h1>
 
-    <button onclick="SendRegistrationRequest()">Register</button>
+      <label for="uname">Username:</label>
+      <input type="text" id="uname" name="uname">
 
-    <div id="textResponse">
-        awaiting response
+      <label for="pword">Password:</label>
+      <input type="password" id="pword" name="pword">
+
+      <label for="pword2">Confirm Password:</label>
+      <input type="password" id="pword2" name="pword2">
+
+      <button onclick="SendRegistrationRequest()">Register</button>
+
+      <div id="textResponse"></div>
+
     </div>
+  </div>
 </body>
 </html>
+
