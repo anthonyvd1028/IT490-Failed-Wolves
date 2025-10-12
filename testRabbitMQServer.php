@@ -48,8 +48,8 @@ function insertData($response)
 	
 	foreach ($response['data']['homeML'] as $book => $value)
 	{
-		$query = "INSERT INTO Odds (EventID, Sportsbook, BetType, Value, Odds) VALUES ('$eventID', '$book', 'ML', 'HomeML', '$value');"	
-		echo $query . PHP_EOL;
+		$query = "INSERT INTO Odds (EventID, Sportsbook, BetType, Value, Odds) VALUES ('$eventID', '$book', 'ML', 'HomeML', '$value');";	
+	     	echo $query . PHP_EOL;
 
 		$results = $mydb->query($query);
     		if ($mydb->errno != 0) {
