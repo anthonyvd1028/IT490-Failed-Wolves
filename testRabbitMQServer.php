@@ -6,7 +6,7 @@ require_once('rabbitMQLib.inc');
 
 function insertData($response)
 {
-    	$mydb = new mysqli('127.0.0.1' , 'admin' , 'AdminPass123!' , 'IT_490');
+	$mydb = new mysqli('127.0.0.1' , 'admin' , 'AdminPass123!' , 'IT_490');
     	if ($mydb->connect_errno != 0) {
         	echo "Failed to connect to database: " . $mydb->connect_error . PHP_EOL;
         	exit(0);
@@ -27,13 +27,39 @@ function insertData($response)
 	if ($results->num_rows === 0)
 	{
 		$query = "INSERT INTO Events (HomeTeam, AwayTeam, StartsAt) VALUES ('$home', '$away', '$start');";
-	}
 
+		$results = $mydb->query($query);
+    		if ($mydb->errno != 0) {
+        		echo "failed to execute query:" . PHP_EOL;
+        		exit(0);
+		}
+	}
+	
+	
+	$query = "SELECT * FROM Events WHERE HomeTeam = '$home' AND AwayTeam = '$away';";
+	
 	$results = $mydb->query($query);
     	if ($mydb->errno != 0) {
         	echo "failed to execute query:" . PHP_EOL;
         	exit(0);
     	}
+	
+        $eventID = $results->fetch_assoc()['EventID'];
+	
+	foreach ($response['data']['homeML'] as $book => $value)
+	{
+		$query = "INSERT INTO Odds (EventID, Sportsbook, BetType, Value, Odds) VALUES ('$eventID', '$book', 'ML', 'HomeML', '$value');"	
+		echo $query . PHP_EOL;
+
+		$results = $mydb->query($query);
+    		if ($mydb->errno != 0) {
+        		echo "failed to execute query:" . PHP_EOL;
+        		exit(0);
+    		}
+	}
+
+
+
 
 	return;
 }
