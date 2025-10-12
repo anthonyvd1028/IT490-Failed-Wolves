@@ -155,6 +155,42 @@ button:hover {
   }
 }
 
+/* SECOND BAR (Sportsbooks) */
+.subnav {
+  background: rgba(61,49,74,0.9);
+  border-bottom: 1px solid rgba(201,218,234,.18);
+  box-shadow: 0 6px 16px rgba(0,0,0,.25) inset;
+}
 
+.subnav-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: .6rem 1rem;
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
 
+.subnav a {
+  color: var(--thistle);
+  text-decoration: none;
+  font-weight: 600;
+  padding: .4rem .7rem;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  transition: transform .2s ease, color .2s ease, border-color .2s ease, background .2s ease;
+}
+
+.subnav a:hover {
+  color: var(--columbia);
+  transform: translateY(-1px);
+  border-color: rgba(201,218,234,.25);
+  background: rgba(201,218,234,.06);
+}
+
+.subnav a.active {
+  color: var(--columbia);
+  border-color: rgba(201,218,234,.35);
+  background: rgba(201,218,234,.10);
+}
 

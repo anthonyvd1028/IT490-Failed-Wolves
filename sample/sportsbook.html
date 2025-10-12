@@ -3,42 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Home</title>
+  <title>Sportsbook</title>
   <link rel="stylesheet" href="style.css">
-  <script>
-    window.onload = function () {
-      let sessionId = sessionStorage.getItem("sessionId");
-      if (!sessionId) {
-        window.location.href = "http://www.sample.com/login.html";
-      } else {
-        var request = new XMLHttpRequest();
-        request.open("POST","message.php",true);
-        request.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
-        request.onreadystatechange = function () { 
-          if (this.readyState == 4 && this.status == 200) {
-            if (JSON.parse(this.responseText).valid) {
-              document.body.style.display = "block";
-            } else {
-              window.location.href = "http://www.sample.com/login.html";
-            }
-          }               
-        }
-        request.send("type=validateSession&sessionId=" + sessionId);
-      }
-    }
-  </script>
+  <script defer src="sportsbook.js"></script>
 </head>
-<body style="display:none;">
+<body>
   <nav class="navbar">
     <h2>BetTracker</h2>
     <ul class="nav-links">
-      <li><a href="#" class="disabled">Home</a></li>
+      <li><a href="index.html">Home</a></li>
       <li><a href="login.html">Login</a></li>
       <li><a href="registration.html">Register</a></li>
     </ul>
   </nav>
 
-  <!-- Second bar: Sportsbooks -->
+  <!-- Same second bar for consistency -->
   <div class="subnav">
     <div class="subnav-inner">
       <a href="sportsbook.html?book=FanDuel">FanDuel</a>
@@ -55,11 +34,16 @@
 
   <div class="container">
     <div class="card">
-      <h1>Welcome!</h1>
-      <p>You are successfully logged into BetTracker.</p>
+      <h1 id="bookTitle">Sportsbook</h1>
+      <p>Choose a sport:</p>
+      <ul style="list-style: none; padding-left: 0; text-align: left; margin: 0 auto; max-width: 340px;">
+        <li style="margin:.4rem 0;">
+          <a id="nflLink" href="#" style="color: var(--columbia); text-decoration: none; font-weight: 600;">NFL</a>
+        </li>
+      </ul>
+      <div id="textResponse" style="margin-top:1rem;"></div>
     </div>
   </div>
 </body>
 </html>
-
 
