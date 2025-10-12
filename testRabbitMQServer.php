@@ -4,6 +4,126 @@ require_once('path.inc');
 require_once('get_host_info.inc');
 require_once('rabbitMQLib.inc');
 
+function insertData($response)
+{
+	$mydb = new mysqli('127.0.0.1' , 'admin' , 'AdminPass123!' , 'IT_490');
+    	if ($mydb->connect_errno != 0) {
+        	echo "Failed to connect to database: " . $mydb->connect_error . PHP_EOL;
+        	exit(0);
+    	}
+	
+	$home = $response['data']['home'];
+	$away = $response['data']['away'];
+	$start = $response['data']['start'];
+	
+	$query = "SELECT * FROM Events WHERE HomeTeam = '$home' AND AwayTeam = '$away';";
+	
+	$results = $mydb->query($query);
+    	if ($mydb->errno != 0) {
+        	echo "failed to execute query:" . PHP_EOL;
+        	exit(0);
+    	}
+
+	if ($results->num_rows === 0)
+	{
+		$query = "INSERT INTO Events (HomeTeam, AwayTeam, StartsAt) VALUES ('$home', '$away', '$start');";
+
+		$results = $mydb->query($query);
+    		if ($mydb->errno != 0) {
+        		echo "failed to execute query:" . PHP_EOL;
+        		exit(0);
+		}
+	}
+	
+	
+	$query = "SELECT * FROM Events WHERE HomeTeam = '$home' AND AwayTeam = '$away';";
+	
+	$results = $mydb->query($query);
+    	if ($mydb->errno != 0) {
+        	echo "failed to execute query:" . PHP_EOL;
+        	exit(0);
+    	}
+	
+        $eventID = $results->fetch_assoc()['EventID'];
+	
+	foreach ($response['data']['homeML'] as $book => $value)
+	{
+		$query = "INSERT INTO Odds (EventID, Sportsbook, BetType, Value, Odds) VALUES ('$eventID', '$book', 'ML', 'HomeML', '$value');";	
+	     	echo $query . PHP_EOL;
+
+		$results = $mydb->query($query);
+    		if ($mydb->errno != 0) {
+        		echo "failed to execute query:" . PHP_EOL;
+        		exit(0);
+    		}
+	}
+
+	foreach ($response['data']['awayML'] as $book => $value)
+	{
+		$query = "INSERT INTO Odds (EventID, Sportsbook, BetType, Value, Odds) VALUES ('$eventID', '$book', 'ML', 'AwayML', '$value');";	
+	     	echo $query . PHP_EOL;
+
+		$results = $mydb->query($query);
+    		if ($mydb->errno != 0) {
+        		echo "failed to execute query:" . PHP_EOL;
+        		exit(0);
+    		}
+	}
+
+	foreach ($response['data']['homeSpread'] as $book => $value)
+	{
+		$query = "INSERT INTO Odds (EventID, Sportsbook, BetType, Value, Odds) VALUES ('$eventID', '$book', 'Spread', '$value[0]', '$value[1]');";	
+	     	echo $query . PHP_EOL;
+
+		$results = $mydb->query($query);
+    		if ($mydb->errno != 0) {
+        		echo "failed to execute query:" . PHP_EOL;
+        		exit(0);
+    		}
+	}
+
+	foreach ($response['data']['awaySpread'] as $book => $value)
+	{
+		$query = "INSERT INTO Odds (EventID, Sportsbook, BetType, Value, Odds) VALUES ('$eventID', '$book', 'Spread', '$value[0]', '$value[1]');";	
+	     	echo $query . PHP_EOL;
+
+		$results = $mydb->query($query);
+    		if ($mydb->errno != 0) {
+        		echo "failed to execute query:" . PHP_EOL;
+        		exit(0);
+    		}
+	}
+
+	foreach ($response['data']['over'] as $book => $value)
+	{
+		$query = "INSERT INTO Odds (EventID, Sportsbook, BetType, Value, Odds) VALUES ('$eventID', '$book', 'Over', '$value[0]', '$value[1]');";	
+	     	echo $query . PHP_EOL;
+
+		$results = $mydb->query($query);
+    		if ($mydb->errno != 0) {
+        		echo "failed to execute query:" . PHP_EOL;
+        		exit(0);
+    		}
+	}
+
+	foreach ($response['data']['under'] as $book => $value)
+	{
+		$query = "INSERT INTO Odds (EventID, Sportsbook, BetType, Value, Odds) VALUES ('$eventID', '$book', 'Under', '$value[0]', '$value[1]');";	
+	     	echo $query . PHP_EOL;
+
+		$results = $mydb->query($query);
+    		if ($mydb->errno != 0) {
+        		echo "failed to execute query:" . PHP_EOL;
+        		exit(0);
+    		}
+	}
+
+
+
+	
+	return;
+}
+
 function createSession($id, $username)
 {
     $mydb = new mysqli('127.0.0.1' , 'admin' , 'AdminPass123!' , 'IT_490');
@@ -142,7 +262,7 @@ function validateSession($sessionId)
 function requestProcessor($request)
 {
   echo "received request".PHP_EOL;
-  var_dump($request);
+  //var_dump($request);
   if(!isset($request['type'])) {
     return "ERROR: unsupported message type";
   }
@@ -153,6 +273,8 @@ function requestProcessor($request)
         return validateSession($request['sessionId']);
     case "registration":
         return doRegister($request['username'],$request['password'],$request['password2']);
+    case "insertData":
+	insertData($request);
   }
   return array("returnCode" => '0', 'message'=>"Server received request and processed");
 }
