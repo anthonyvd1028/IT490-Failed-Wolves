@@ -58,9 +58,69 @@ function insertData($response)
     		}
 	}
 
+	foreach ($response['data']['awayML'] as $book => $value)
+	{
+		$query = "INSERT INTO Odds (EventID, Sportsbook, BetType, Value, Odds) VALUES ('$eventID', '$book', 'ML', 'AwayML', '$value');";	
+	     	echo $query . PHP_EOL;
+
+		$results = $mydb->query($query);
+    		if ($mydb->errno != 0) {
+        		echo "failed to execute query:" . PHP_EOL;
+        		exit(0);
+    		}
+	}
+
+	foreach ($response['data']['homeSpread'] as $book => $value)
+	{
+		$query = "INSERT INTO Odds (EventID, Sportsbook, BetType, Value, Odds) VALUES ('$eventID', '$book', 'Spread', '$value[0]', '$value[1]');";	
+	     	echo $query . PHP_EOL;
+
+		$results = $mydb->query($query);
+    		if ($mydb->errno != 0) {
+        		echo "failed to execute query:" . PHP_EOL;
+        		exit(0);
+    		}
+	}
+
+	foreach ($response['data']['awaySpread'] as $book => $value)
+	{
+		$query = "INSERT INTO Odds (EventID, Sportsbook, BetType, Value, Odds) VALUES ('$eventID', '$book', 'Spread', '$value[0]', '$value[1]');";	
+	     	echo $query . PHP_EOL;
+
+		$results = $mydb->query($query);
+    		if ($mydb->errno != 0) {
+        		echo "failed to execute query:" . PHP_EOL;
+        		exit(0);
+    		}
+	}
+
+	foreach ($response['data']['over'] as $book => $value)
+	{
+		$query = "INSERT INTO Odds (EventID, Sportsbook, BetType, Value, Odds) VALUES ('$eventID', '$book', 'Over', '$value[0]', '$value[1]');";	
+	     	echo $query . PHP_EOL;
+
+		$results = $mydb->query($query);
+    		if ($mydb->errno != 0) {
+        		echo "failed to execute query:" . PHP_EOL;
+        		exit(0);
+    		}
+	}
+
+	foreach ($response['data']['under'] as $book => $value)
+	{
+		$query = "INSERT INTO Odds (EventID, Sportsbook, BetType, Value, Odds) VALUES ('$eventID', '$book', 'Under', '$value[0]', '$value[1]');";	
+	     	echo $query . PHP_EOL;
+
+		$results = $mydb->query($query);
+    		if ($mydb->errno != 0) {
+        		echo "failed to execute query:" . PHP_EOL;
+        		exit(0);
+    		}
+	}
 
 
 
+	
 	return;
 }
 
