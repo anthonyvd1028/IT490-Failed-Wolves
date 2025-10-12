@@ -16,7 +16,7 @@ function insertData($response)
 	$away = $response['data']['away'];
 	$start = $response['data']['start'];
 	
-	$query = "SELECT * FROM EVENTS WHERE HomeTeam = '$home' AND AwayTeam = '$away';";
+	$query = "SELECT * FROM Events WHERE HomeTeam = '$home' AND AwayTeam = '$away';";
 	
 	$results = $mydb->query($query);
     	if ($mydb->errno != 0) {
@@ -26,7 +26,7 @@ function insertData($response)
 
 	if ($results->num_rows === 0)
 	{
-		$query = "INSERT INTO EVENTS (HomeTeam, AwayTeam, StartsAt) VALUES ('$home', '$away', $start);";
+		$query = "INSERT INTO Events (HomeTeam, AwayTeam, StartsAt) VALUES ('$home', '$away', '$start');";
 	}
 
 	$results = $mydb->query($query);
