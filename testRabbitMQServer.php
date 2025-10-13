@@ -4,6 +4,11 @@ require_once('path.inc');
 require_once('get_host_info.inc');
 require_once('rabbitMQLib.inc');
 
+function insertEvent($response)
+{
+	return;
+}
+
 function insertData($response)
 {
 	$mydb = new mysqli('127.0.0.1' , 'admin' , 'AdminPass123!' , 'IT_490');
@@ -118,9 +123,6 @@ function insertData($response)
     		}
 	}
 
-
-
-	
 	return;
 }
 
@@ -275,6 +277,8 @@ function requestProcessor($request)
         return doRegister($request['username'],$request['password'],$request['password2']);
     case "insertData":
 	insertData($request);
+    case "insertEvent":
+	insertEvent($request);
   }
   return array("returnCode" => '0', 'message'=>"Server received request and processed");
 }
