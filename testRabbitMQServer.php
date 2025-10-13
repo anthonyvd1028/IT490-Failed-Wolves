@@ -6,7 +6,45 @@ require_once('rabbitMQLib.inc');
 
 function insertEvent($response)
 {
-	return;
+	// Connect to database
+       	$mydb = new mysqli('127.0.0.1' , 'admin' , 'AdminPass123!' , 'IT_490');
+	if ($mydb->connect_errno != 0) {
+		return array("returnCode" => '1' , "message" => "Database connection failed:" . $mydb->connect_error);
+	}
+
+	$home = $response['data']['home'] ?? null;
+	$away = $response['data']['away'] ?? null;
+	$homeScore = $response['data']['homeScore'] ?? null;
+	$awayScore = $response['data']['awayScore'] ?? null;
+
+	echo $home . $away . PHP_EOL;
+	$query = "SELECT * FROM Events WHERE HomeTeam = '$home' AND AwayTeam = '$away';";
+	echo $query . PHP_EOL;	
+	$results = $mydb->query($query);
+    	if ($mydb->errno != 0) {
+        	echo "failed to execute query:" . PHP_EOL;
+        	exit(0);
+    	}
+	
+	 $eventID = $results->fetch_assoc()['EventID'];
+	if (empty($eventID))
+	{
+		exit;
+	}
+
+	// Insert event result into EventResults
+	$query = "INSERT INTO EventResults (EventID, HomeScore, AwayScore) VALUES ('$eventID', '$homeScore', '$awayScore');";
+	echo $query . PHP_EOL; 
+	$results = $mydb->query($query);
+
+	if ($mydb->errno != 0) {
+		echo "Failed to execute insert query:" . $mydb->error . PHP_EOL;
+		exit(0);
+	}
+	echo "Inserted event result successfully!" . PHP_EOL;
+	return array("returnCode" => '0' , "message" => "Event results inserted successfully");
+
+
 }
 
 function insertData($response)
