@@ -18,7 +18,7 @@ foreach ($lines as $line)
 {
 	if (strpos(trim($line), "#") === 0) continue;
 	$parts = explode('=', $line, 2);
-	if ($parts[0] === "API_KEY")
+	if ($parts[0] === "API_KEY_SGO")
 	{
 		$key = $parts[1];
 	}
