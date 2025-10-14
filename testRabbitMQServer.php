@@ -4,6 +4,66 @@ require_once('path.inc');
 require_once('get_host_info.inc');
 require_once('rabbitMQLib.inc');
 
+function getGamesSportsbook($sportsbook)
+{	
+	$return = array('events' => array());
+
+       	$mydb = new mysqli('127.0.0.1' , 'admin' , 'AdminPass123!' , 'IT_490');	
+	if ($mydb->connect_errno != 0) {
+		return array("returnCode" => '1' , "message" => "Database connection failed:" . $mydb->connect_error);
+	}
+
+	$query = "SELECT * FROM Odds LEFT JOIN Events ON Events.EventID = Odds.EventID WHERE Events.StartsAt > NOW() AND Odds.Date = CURDATE() AND Odds.Sportsbook = '$sportsbook' ORDER BY Events.EventID, Odds.Sportsbook, Odds.BetType;";
+	
+	$results = $mydb->query($query);
+    	if ($mydb->errno != 0) {
+        	echo "failed to execute query:" . PHP_EOL;
+        	exit(0);
+    	}
+
+	if ($results->num_rows > 0)
+	{
+		while ($row = $results->fetch_assoc())
+		{
+			$eventID = $row['EventID'];
+			$sportsbook = $row['Sportsbook'];
+			$betType = $row['BetType'];
+			$odds = $row['Odds'];
+			$value = $row['Value'];
+			$homeTeam = $row['HomeTeam']; 
+			$awayTeam = $row['AwayTeam']; 
+			$startsAt = $row['StartsAt'];
+			
+			if (!isset($return['events'][$eventID]))
+			{
+				$return['events'] += array($eventID => array('home' => $homeTeam, 'away' => $awayTeam, 'startsAt' => $startsAt, 'odds' => array()));
+			}
+
+			if (!isset($return['events'][$eventID]['odds'][$sportsbook]))
+			{
+				$return['events'][$eventID]['odds'] += array($sportsbook => array());
+			}	
+			
+			if ($betType == "HomeML") {
+				$return['events'][$eventID]['odds'][$sportsbook]['homeML'] = array('value' => $value, 'odds' => $odds);	
+			} elseif ($betType == "AwayML") {
+				$return['events'][$eventID]['odds'][$sportsbook]['awayML'] = array('value' => $value, 'odds' => $odds);		
+			} elseif ($betType == "Over") {
+				$return['events'][$eventID]['odds'][$sportsbook]['over'] = array('value' => $value, 'odds' => $odds);	
+			} elseif ($betType == "Under") {
+				$return['events'][$eventID]['odds'][$sportsbook]['under'] = array('value' => $value, 'odds' => $odds);	
+			} elseif ($betType == "HomeSpread") {
+				$return['events'][$eventID]['odds'][$sportsbook]['homeSpread'] = array('value' => $value, 'odds' => $odds);	
+			} elseif ($betType == "AwaySpread") {
+				$return['events'][$eventID]['odds'][$sportsbook]['awaySpread'] = array('value' => $value, 'odds' => $odds);	
+			} 	
+
+		}
+	}
+
+	return array('games' => $return);
+}
+
 function getGames()
 {	
 	$return = array('events' => array());
@@ -378,7 +438,9 @@ function requestProcessor($request)
     case "insertEvent":
 	return insertEvent($request);
     case "getOdds":
-	return getGames();
+	 return getGames();
+    case "getOddsSportsbook":
+	 return getGamesSportsbook($request['sportsbook']);
   }
   return array("returnCode" => '0', 'message'=>"Server received request and processed");
 }
