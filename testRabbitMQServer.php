@@ -314,9 +314,9 @@ function requestProcessor($request)
     case "registration":
         return doRegister($request['username'],$request['password'],$request['password2']);
     case "insertData":
-	insertData($request);
+	return insertData($request);
     case "insertEvent":
-	insertEvent($request);
+	return insertEvent($request);
   }
   return array("returnCode" => '0', 'message'=>"Server received request and processed");
 }
