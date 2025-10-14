@@ -4,6 +4,37 @@ require_once('path.inc');
 require_once('get_host_info.inc');
 require_once('rabbitMQLib.inc');
 
+function getGames()
+{	
+	$return = array();
+	$sportsbook = null;
+	$eventID = null;
+
+	$mydb = new mysqli('127.0.0.1' , 'admin' , 'AdminPass123!' , 'IT_490');
+	if ($mydb->connect_errno != 0) {
+		return array("returnCode" => '1' , "message" => "Database connection failed:" . $mydb->connect_error);
+	}
+
+	$query = "SELECT * FROM Odds LEFT JOIN Events ON Events.EventID = Odds.EventID WHERE Events.StartsAt > NOW() ORDER BY Events.EventID, Odds.Sportsbook, Odds.BetType;";
+	
+	$results = $mydb->query($query);
+    	if ($mydb->errno != 0) {
+        	echo "failed to execute query:" . PHP_EOL;
+        	exit(0);
+    	}
+
+	if ($results->num_rows > 0)
+	{
+		while ($row = $results->fetch_assoc())
+		{
+			var_dump($row);
+			return array("Message" => "Printed");
+		}
+	}
+
+	return $return;
+}
+
 function insertEvent($response)
 {
 	// Connect to database
