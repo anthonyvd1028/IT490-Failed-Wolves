@@ -6,11 +6,8 @@ require_once('rabbitMQLib.inc');
 
 function getGames()
 {	
-	$return = array();
-	$sportsbook = null;
-	$eventID = null;
-
-	$mydb = new mysqli('127.0.0.1' , 'admin' , 'AdminPass123!' , 'IT_490');
+	$return = array('events' => array());
+	
 	if ($mydb->connect_errno != 0) {
 		return array("returnCode" => '1' , "message" => "Database connection failed:" . $mydb->connect_error);
 	}
@@ -27,8 +24,41 @@ function getGames()
 	{
 		while ($row = $results->fetch_assoc())
 		{
-			var_dump($row);
-			return array("Message" => "Printed");
+			$eventID = $row['EventID'];
+			$sportsbook = $row['Sportsbook'];
+			$betType = $row['BetType'];
+			$odds = $row['Odds'];
+			$value = $row['Value'];
+			$homeTeam = $row['HomeTeam']; 
+			$awayTeam = $row['AwayTeam']; 
+			$startsAt = $row['StartsAt'];
+			
+			if (!isset($return['events'][$eventID]))
+			{
+				$return['events'] += array($eventID => array('home' => $homeTeam, 'away' => $awayTeam, 'startsAt' => $startsAt, 'odds' => array()));
+			}
+
+			if (!isset($return['events'][$eventID]['odds'][$sportsbook]))
+			{
+				$return['events'][$eventID]['odds'] += array($sportsbook => array());
+			}	
+			
+			if ($betType == "HomeML") {
+				$return['events'][$eventID]['odds'][$sportsbook]['homeML'] = array('value' => $value, 'odds' => $odds);	
+			} elseif ($betType == "AwayML") {
+				$return['events'][$eventID]['odds'][$sportsbook]['awayML'] = array('value' => $value, 'odds' => $odds);		
+			} elseif ($betType == "Over") {
+				$return['events'][$eventID]['odds'][$sportsbook]['over'] = array('value' => $value, 'odds' => $odds);	
+			} elseif ($betType == "Under") {
+				$return['events'][$eventID]['odds'][$sportsbook]['under'] = array('value' => $value, 'odds' => $odds);	
+			} elseif ($betType == "HomeSpread") {
+				$return['events'][$eventID]['odds'][$sportsbook]['homeSpread'] = array('value' => $value, 'odds' => $odds);	
+			} elseif ($betType == "AwaySpread") {
+				$return['events'][$eventID]['odds'][$sportsbook]['awaySpread'] = array('value' => $value, 'odds' => $odds);	
+			} 	
+
+			var_dump($return);
+			return array("message" => "printed");
 		}
 	}
 
@@ -122,7 +152,7 @@ function insertData($response)
 	
 	foreach ($response['data']['homeML'] as $book => $value)
 	{
-		$query = "INSERT INTO Odds (EventID, Sportsbook, BetType, Value, Odds) VALUES ('$eventID', '$book', 'ML', 'HomeML', '$value');";	
+		$query = "INSERT INTO Odds (EventID, Sportsbook, BetType, Value, Odds) VALUES ('$eventID', '$book', 'HomeML', NULL, '$value');";	
 	     	echo $query . PHP_EOL;
 
 		$results = $mydb->query($query);
@@ -134,7 +164,7 @@ function insertData($response)
 
 	foreach ($response['data']['awayML'] as $book => $value)
 	{
-		$query = "INSERT INTO Odds (EventID, Sportsbook, BetType, Value, Odds) VALUES ('$eventID', '$book', 'ML', 'AwayML', '$value');";	
+		$query = "INSERT INTO Odds (EventID, Sportsbook, BetType, Value, Odds) VALUES ('$eventID', '$book', 'AwayML', NULL, '$value');";	
 	     	echo $query . PHP_EOL;
 
 		$results = $mydb->query($query);
@@ -146,7 +176,7 @@ function insertData($response)
 
 	foreach ($response['data']['homeSpread'] as $book => $value)
 	{
-		$query = "INSERT INTO Odds (EventID, Sportsbook, BetType, Value, Odds) VALUES ('$eventID', '$book', 'Spread', '$value[0]', '$value[1]');";	
+		$query = "INSERT INTO Odds (EventID, Sportsbook, BetType, Value, Odds) VALUES ('$eventID', '$book', 'HomeSpread', '$value[0]', '$value[1]');";	
 	     	echo $query . PHP_EOL;
 
 		$results = $mydb->query($query);
@@ -158,7 +188,7 @@ function insertData($response)
 
 	foreach ($response['data']['awaySpread'] as $book => $value)
 	{
-		$query = "INSERT INTO Odds (EventID, Sportsbook, BetType, Value, Odds) VALUES ('$eventID', '$book', 'Spread', '$value[0]', '$value[1]');";	
+		$query = "INSERT INTO Odds (EventID, Sportsbook, BetType, Value, Odds) VALUES ('$eventID', '$book', 'AwaySpread', '$value[0]', '$value[1]');";	
 	     	echo $query . PHP_EOL;
 
 		$results = $mydb->query($query);
