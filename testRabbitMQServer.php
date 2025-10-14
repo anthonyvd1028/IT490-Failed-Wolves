@@ -13,7 +13,7 @@ function getGames()
 		return array("returnCode" => '1' , "message" => "Database connection failed:" . $mydb->connect_error);
 	}
 
-	$query = "SELECT * FROM Odds LEFT JOIN Events ON Events.EventID = Odds.EventID WHERE Events.StartsAt > NOW() ORDER BY Events.EventID, Odds.Sportsbook, Odds.BetType;";
+	$query = "SELECT * FROM Odds LEFT JOIN Events ON Events.EventID = Odds.EventID WHERE Events.StartsAt > NOW() AND Odds.Date = CURDATE() ORDER BY Events.EventID, Odds.Sportsbook, Odds.BetType;";
 	
 	$results = $mydb->query($query);
     	if ($mydb->errno != 0) {
@@ -58,12 +58,10 @@ function getGames()
 				$return['events'][$eventID]['odds'][$sportsbook]['awaySpread'] = array('value' => $value, 'odds' => $odds);	
 			} 	
 
-			var_dump($return);
-			return array("message" => "printed");
 		}
 	}
 
-	return $return;
+	return array('games' => $return);
 }
 
 function insertEvent($response)
