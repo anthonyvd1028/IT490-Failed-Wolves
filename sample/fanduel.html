@@ -1,0 +1,82 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home</title>
+  <link rel="stylesheet" href="style.css">
+  <script>
+    window.onload = function () {
+      let sessionId = sessionStorage.getItem("sessionId");
+      if (!sessionId) {
+        window.location.href = "http://www.sample.com/login.html";
+      } else {
+        var request = new XMLHttpRequest();
+        request.open("POST","message.php",true);
+        request.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+        request.onreadystatechange = function () { 
+          if (this.readyState == 4 && this.status == 200) {
+            if (JSON.parse(this.responseText).valid) {
+              document.body.style.display = "block";
+            } else {
+              window.location.href = "http://www.sample.com/login.html";
+            }
+          }               
+        }
+        request.send("type=validateSession&sessionId=" + sessionId);
+        
+	var games = new XMLHttpRequest();
+        games.open("POST","message.php",true);
+        games.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+        games.onreadystatechange = function () { 
+          if (this.readyState == 4 && this.status == 200) {
+	    		console.log(JSON.parse(this.responseText));
+	  	}               
+        }
+        games.send("type=getOddsSportsbook&sportsbook=fanduel");
+      
+      }
+    }
+  </script>
+</head>
+<body style="display:none;">
+  <!-- main navbar -->
+  <nav class="navbar">
+    <h2>BetTracker</h2>
+    <ul class="nav-links">
+      <li><a href="#" class="disabled">Home</a></li>
+      <li><a href="login.html">Login</a></li>
+      <li><a href="registration.html">Register</a></li>
+      <li>
+        <a href="portfolio.html" title="My Account">
+          <span style="font-size: 1.3rem;">👤</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- sportsbooks navbar -->
+  <div class="subnav">
+    <div class="subnav-inner">
+      <a href="sportsbook.html?book=FanDuel">FanDuel</a>
+      <a href="sportsbook.html?book=Draft%20Kings">Draft Kings</a>
+      <a href="sportsbook.html?book=BetMGM">BetMGM</a>
+      <a href="sportsbook.html?book=Caesars">Caesars</a>
+      <a href="sportsbook.html?book=ESPN%20BET">ESPN BET</a>
+      <a href="sportsbook.html?book=Bovada">Bovada</a>
+      <a href="sportsbook.html?book=Unibet">Unibet</a>
+      <a href="sportsbook.html?book=PointsBet">PointsBet</a>
+    </div>
+  </div>
+
+  <!-- main content -->
+  <div class="container">
+    <div class="card">
+      <h1>Welcome!</h1>
+      <p>You are successfully logged in.</p>
+    </div>
+  </div>
+</body>
+</html>
+
