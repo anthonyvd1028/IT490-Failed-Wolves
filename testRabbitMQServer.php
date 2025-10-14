@@ -7,7 +7,8 @@ require_once('rabbitMQLib.inc');
 function getGames()
 {	
 	$return = array('events' => array());
-	
+
+       	$mydb = new mysqli('127.0.0.1' , 'admin' , 'AdminPass123!' , 'IT_490');	
 	if ($mydb->connect_errno != 0) {
 		return array("returnCode" => '1' , "message" => "Database connection failed:" . $mydb->connect_error);
 	}
