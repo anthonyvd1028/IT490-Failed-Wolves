@@ -44,16 +44,16 @@ case "validateSession":
 case "getOdds":
 	$rabbitRequest = array();
 	$rabbitRequest['type'] = "getOdds";
-	$rabbitRequest['sessionId'] = $request["sessionId"];
 	$response = $client->send_request($rabbitRequest);
-	echo json_encode(array('data' => $response["data"]));
+	echo json_encode(array('data' => $response["games"]));
+	break;
 case "getOddsSportsbook":
 	$rabbitRequest = array();
-	$rabbitRequest['type' = "getOddsSportsbook";
-	$rabbitRequest['sessionId'] = $request["sessionId"];
+	$rabbitRequest['type'] = "getOddsSportsbook";
 	$rabbitRequest['sportsbook'] = $request["sportsbook"];
         $response = $client->send_request($rabbitRequest);
-	echo json_encode(array('data' => $response["data"]));
+	echo json_encode(array('data' => $response["games"]));
+	break;
 }
 
 exit(0);
