@@ -31,7 +31,8 @@
         games.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
         games.onreadystatechange = function () { 
           if (this.readyState == 4 && this.status == 200) {
-	    		console.log(JSON.parse(this.responseText));
+			const results = JSON.parse(this.responseText);
+			console.log(results);
 	  	}               
         }
         games.send("type=getOddsSportsbook&sportsbook=fanduel");
