@@ -348,6 +348,8 @@ function requestProcessor($request)
 	return insertData($request);
     case "insertEvent":
 	return insertEvent($request);
+    case "getOdds":
+	return getGames();
   }
   return array("returnCode" => '0', 'message'=>"Server received request and processed");
 }
