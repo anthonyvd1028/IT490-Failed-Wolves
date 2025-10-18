@@ -169,15 +169,18 @@ function insertEvent($response)
 
 function insertData($response)
 {
+	var_dump($response);
 	$mydb = new mysqli('127.0.0.1' , 'admin' , 'AdminPass123!' , 'IT_490');
     	if ($mydb->connect_errno != 0) {
         	echo "Failed to connect to database: " . $mydb->connect_error . PHP_EOL;
         	exit(0);
     	}
-	
-	$home = $response['data']['home'];
-	$away = $response['data']['away'];
-	$start = $response['data']['start'];
+
+	foreach ($response['data'] as $game)
+	{
+	$home = $game['home'];
+	$away = $game['away'];
+	$start = $game['start'];
 	
 	$query = "SELECT * FROM Events WHERE HomeTeam = '$home' AND AwayTeam = '$away';";
 	
@@ -209,7 +212,7 @@ function insertData($response)
 	
         $eventID = $results->fetch_assoc()['EventID'];
 	
-	foreach ($response['data']['homeML'] as $book => $value)
+	foreach ($game['homeML'] as $book => $value)
 	{
 		$query = "INSERT INTO Odds (EventID, Sportsbook, BetType, Value, Odds) VALUES ('$eventID', '$book', 'HomeML', NULL, '$value');";	
 	     	echo $query . PHP_EOL;
@@ -221,7 +224,7 @@ function insertData($response)
     		}
 	}
 
-	foreach ($response['data']['awayML'] as $book => $value)
+	foreach ($game['awayML'] as $book => $value)
 	{
 		$query = "INSERT INTO Odds (EventID, Sportsbook, BetType, Value, Odds) VALUES ('$eventID', '$book', 'AwayML', NULL, '$value');";	
 	     	echo $query . PHP_EOL;
@@ -233,7 +236,7 @@ function insertData($response)
     		}
 	}
 
-	foreach ($response['data']['homeSpread'] as $book => $value)
+	foreach ($game['homeSpread'] as $book => $value)
 	{
 		$query = "INSERT INTO Odds (EventID, Sportsbook, BetType, Value, Odds) VALUES ('$eventID', '$book', 'HomeSpread', '$value[0]', '$value[1]');";	
 	     	echo $query . PHP_EOL;
@@ -245,7 +248,7 @@ function insertData($response)
     		}
 	}
 
-	foreach ($response['data']['awaySpread'] as $book => $value)
+	foreach ($game['awaySpread'] as $book => $value)
 	{
 		$query = "INSERT INTO Odds (EventID, Sportsbook, BetType, Value, Odds) VALUES ('$eventID', '$book', 'AwaySpread', '$value[0]', '$value[1]');";	
 	     	echo $query . PHP_EOL;
@@ -257,7 +260,7 @@ function insertData($response)
     		}
 	}
 
-	foreach ($response['data']['over'] as $book => $value)
+	foreach ($game['over'] as $book => $value)
 	{
 		$query = "INSERT INTO Odds (EventID, Sportsbook, BetType, Value, Odds) VALUES ('$eventID', '$book', 'Over', '$value[0]', '$value[1]');";	
 	     	echo $query . PHP_EOL;
@@ -269,7 +272,7 @@ function insertData($response)
     		}
 	}
 
-	foreach ($response['data']['under'] as $book => $value)
+	foreach ($game['under'] as $book => $value)
 	{
 		$query = "INSERT INTO Odds (EventID, Sportsbook, BetType, Value, Odds) VALUES ('$eventID', '$book', 'Under', '$value[0]', '$value[1]');";	
 	     	echo $query . PHP_EOL;
@@ -280,7 +283,7 @@ function insertData($response)
         		exit(0);
     		}
 	}
-
+	}
 	return;
 }
 
@@ -419,6 +422,24 @@ function validateSession($sessionId)
      }
 }
 
+function sendBet($bet){
+    $mydb = new mysqli('127.0.0.1' , 'admin' , 'AdminPass123!' , 'IT_490');
+    if ($mydb->connect_errno != 0) {
+        echo "Failed to connect to database: " . $mydb->connect_error . PHP_EOL;
+	exit(0);
+
+    }
+    echo "Succesfully connected to database".PHP_EOL;
+    $betId = uniqid("BET_", true);
+    $insert = "INSERT INTO bets (OddID, UserID, WageID, BetID) VALUES ($oddId, $userId, $wageId, $betId)";
+    $insertResp = $mydb->query($insert);
+    if ($mydb->errno != 0) {
+        echo "failed to execute insert query:" . PHP_EOL;
+        exit(0);
+    }
+
+}
+
 function requestProcessor($request)
 {
   echo "received request".PHP_EOL;
@@ -441,6 +462,8 @@ function requestProcessor($request)
 	 return getGames();
     case "getOddsSportsbook":
 	 return getGamesSportsbook($request['sportsbook']);
+    case "sendBet":
+	  return sendBet($request);
   }
   return array("returnCode" => '0', 'message'=>"Server received request and processed");
 }
