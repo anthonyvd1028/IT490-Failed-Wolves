@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,8 +12,8 @@
         window.location.href = "http://www.sample.com/login.html";
       } else {
         var request = new XMLHttpRequest();
-        request.open("POST","message.php",true);
-        request.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+        request.open("POST", "message.php", true);
+        request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
         request.onreadystatechange = function () { 
           if (this.readyState == 4 && this.status == 200) {
             if (JSON.parse(this.responseText).valid) {
@@ -23,41 +22,149 @@
               window.location.href = "http://www.sample.com/login.html";
             }
           }               
-        }
+        };
         request.send("type=validateSession&sessionId=" + sessionId);
-        
-	var games = new XMLHttpRequest();
+
+
+        var games = new XMLHttpRequest();
         games.open("POST","message.php",true);
         games.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
         games.onreadystatechange = function () { 
           if (this.readyState == 4 && this.status == 200) {
-			const results = JSON.parse(this.responseText);
-			console.log(results);
-	  	}               
-        }
+            const results = JSON.parse(this.responseText);
+            console.log(results);              // keep logging raw data
+            renderOddsTables(results);         // render the parsed data below
+          }               
+        };
         games.send("type=getOddsSportsbook&sportsbook=fanduel");
-      
       }
+    };
+  </script>
+
+  <script>
+    // format time
+    function fmtTime(ts) {
+      if (!ts) return "N/A";
+      const iso = ts.replace(' ', 'T');
+      const d = new Date(iso);
+      return isNaN(d) ? ts : d.toLocaleString([], { weekday: 'short', hour: 'numeric', minute: '2-digit' });
+    }
+
+    // extract from json
+    function extractGameFromFanDuel(e) {
+      const fd = (e.odds && e.odds.fanduel) ? e.odds.fanduel : {};
+      return {
+        home: e.home || "Home Team",
+        away: e.away || "Away Team",
+        start: e.startsAt || "N/A",
+        moneyline: {
+          home: fd.homeML?.odds ?? "N/A",
+          away: fd.awayML?.odds ?? "N/A"
+        },
+        spread: {
+          home: { points: fd.homeSpread?.value ?? "N/A", odds: fd.homeSpread?.odds ?? "N/A" },
+          away: { points: fd.awaySpread?.value ?? "N/A", odds: fd.awaySpread?.odds ?? "N/A" }
+        },
+        totals: {
+          over:  { points: fd.over?.value  ?? "N/A", odds: fd.over?.odds  ?? "N/A" },
+          under: { points: fd.under?.value ?? "N/A", odds: fd.under?.odds ?? "N/A" }
+        }
+      };
+    }
+
+    function makeCell(text) {
+      const td = document.createElement('td');
+      td.textContent = text;
+      return td;
+    }
+
+    function renderOneGame(game, mount) {
+      const head = document.createElement('div');
+      head.style.textAlign = 'left';
+      head.style.margin = '1.25rem 0 .35rem';
+      head.style.color = 'var(--columbia)';
+      head.style.fontWeight = '600';
+      head.textContent = `${game.away} @ ${game.home}`;
+
+      const sub = document.createElement('div');
+      sub.style.textAlign = 'left';
+      sub.style.marginBottom = '.5rem';
+      sub.style.fontSize = '.95rem';
+      sub.style.color = 'var(--thistle)';
+      sub.textContent = `Start Time: ${fmtTime(game.start)}`;
+
+      const table = document.createElement('table');
+      table.className = 'odds-table';
+
+      const thead = document.createElement('thead');
+      const trh = document.createElement('tr');
+      ['','Moneyline','Spread','Over/Under'].forEach(h => {
+        const th = document.createElement('th');
+        th.textContent = h;
+        trh.appendChild(th);
+      });
+      thead.appendChild(trh);
+
+      const tbody = document.createElement('tbody');
+
+      const trHome = document.createElement('tr');
+      trHome.appendChild(makeCell('Home Team'));
+      trHome.appendChild(makeCell(`${game.moneyline.home}`));
+      trHome.appendChild(makeCell(`${game.spread.home.odds}\n${game.spread.home.points}`));
+      trHome.appendChild(makeCell(`${game.totals.over.odds}\nO ${game.totals.over.points}`));
+      tbody.appendChild(trHome);
+
+      const trAway = document.createElement('tr');
+      trAway.appendChild(makeCell('Away Team'));
+      trAway.appendChild(makeCell(`${game.moneyline.away}`));
+      trAway.appendChild(makeCell(`${game.spread.away.odds}\n${game.spread.away.points}`));
+      trAway.appendChild(makeCell(`${game.totals.under.odds}\nU ${game.totals.under.points}`));
+      tbody.appendChild(trAway);
+
+      table.appendChild(thead);
+      table.appendChild(tbody);
+
+      const block = document.createElement('div');
+      block.className = 'odds-block';
+      block.appendChild(head);
+      block.appendChild(sub);
+      block.appendChild(table);
+
+      mount.appendChild(block);
+    }
+
+    function renderOddsTables(results) {
+      const container = document.getElementById('oddsContainer');
+      if (!container) return;
+      container.innerHTML = '';
+
+      const eventsObj = results?.data?.events || {};
+      const events = Object.values(eventsObj);
+
+      if (!events.length) {
+        container.innerHTML = '<p style="color: var(--thistle);">No events found.</p>';
+        return;
+      }
+
+      events.forEach(e => {
+        const g = extractGameFromFanDuel(e);
+        renderOneGame(g, container);
+      });
     }
   </script>
 </head>
+
 <body style="display:none;">
-  <!-- main navbar -->
   <nav class="navbar">
     <h2>BetTracker</h2>
     <ul class="nav-links">
       <li><a href="index.html">Home</a></li>
       <li><a href="login.html">Login</a></li>
       <li><a href="registration.html">Register</a></li>
-      <li>
-        <a href="portfolio.html" title="My Account">
-          <span style="font-size: 1.3rem;">👤</span>
-        </a>
-      </li>
+      <li><a href="portfolio.html" title="My Account"><span style="font-size: 1.3rem;">👤</span></a></li>
     </ul>
   </nav>
 
-  <!-- sportsbooks navbar -->
   <div class="subnav">
     <div class="subnav-inner">
       <a href="fanduel.html" class="active">FanDuel</a>
@@ -71,11 +178,11 @@
     </div>
   </div>
 
-  <!-- main content -->
   <div class="container">
     <div class="card">
-      <h1>Fanduel</h1>
+      <h1>FanDuel</h1>
       <p>Displaying current NFL odds from FanDuel.</p>
+      <div id="oddsContainer" style="margin-top:1rem;"></div>
     </div>
   </div>
 </body>

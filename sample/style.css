@@ -9,9 +9,7 @@
   --text: #F7F8FC;
 }
 
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 body {
   margin: 0;
@@ -62,9 +60,14 @@ body {
   transform: translateY(-1px);
 }
 
-.nav-links a.disabled {
-  display: none;
+.nav-links a.disabled { display: none; }
+
+/* 👤 User Icon Animation */
+.nav-links a span {
+  vertical-align: middle;
+  transition: transform 0.25s ease;
 }
+.nav-links a:hover span { transform: scale(1.1); }
 
 /* LAYOUT */
 .container {
@@ -149,10 +152,7 @@ button:hover {
 }
 
 @media (max-width: 480px) {
-  .card {
-    width: 90%;
-    padding: 1.5rem;
-  }
+  .card { width: 90%; padding: 1.5rem; }
 }
 
 /* SECOND BAR (Sportsbooks) */
@@ -161,7 +161,6 @@ button:hover {
   border-bottom: 1px solid rgba(201,218,234,.18);
   box-shadow: 0 6px 16px rgba(0,0,0,.25) inset;
 }
-
 .subnav-inner {
   max-width: 1200px;
   margin: 0 auto;
@@ -170,7 +169,6 @@ button:hover {
   gap: 1rem;
   flex-wrap: wrap;
 }
-
 .subnav a {
   color: var(--thistle);
   text-decoration: none;
@@ -180,17 +178,45 @@ button:hover {
   border: 1px solid transparent;
   transition: transform .2s ease, color .2s ease, border-color .2s ease, background .2s ease;
 }
-
 .subnav a:hover {
   color: var(--columbia);
   transform: translateY(-1px);
   border-color: rgba(201,218,234,.25);
   background: rgba(201,218,234,.06);
 }
-
 .subnav a.active {
   color: var(--columbia);
   border-color: rgba(201,218,234,.35);
   background: rgba(201,218,234,.10);
 }
+
+/* Odds Tables */
+.odds-block {
+  margin: 1rem 0 1.25rem;
+  padding: 1rem;
+  border: 1px solid rgba(201,218,234,.12);
+  border-radius: 12px;
+  background: rgba(0,0,0,.18);
+}
+.odds-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: linear-gradient(180deg, rgba(61,49,74,.88), rgba(26,20,35,.88));
+  border: 1px solid rgba(201,218,234,.18);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.odds-table th, .odds-table td {
+  padding: .75rem .9rem;
+  border-bottom: 1px solid rgba(201,218,234,.12);
+  vertical-align: top;
+  white-space: pre-line;
+}
+.odds-table thead th {
+  text-align: left;
+  color: var(--columbia);
+  font-weight: 700;
+}
+.odds-table tbody tr:last-child td { border-bottom: none; }
+
 
