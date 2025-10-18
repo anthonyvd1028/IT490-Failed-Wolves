@@ -419,6 +419,24 @@ function validateSession($sessionId)
      }
 }
 
+function sendBet($bet){
+    $mydb = new mysqli('127.0.0.1' , 'admin' , 'AdminPass123!' , 'IT_490');
+    if ($mydb->connect_errno != 0) {
+        echo "Failed to connect to database: " . $mydb->connect_error . PHP_EOL;
+	exit(0);
+
+    }
+    echo "Succesfully connected to database".PHP_EOL;
+    $betId = uniqid("BET_", true);
+    $insert = "INSERT INTO bets (OddID, UserID, WageID, BetID) VALUES ($oddId, $userId, $wageId, $betId)";
+    $insertResp = $mydb->query($insert);
+    if ($mydb->errno != 0) {
+        echo "failed to execute insert query:" . PHP_EOL;
+        exit(0);
+    }
+
+}
+
 function requestProcessor($request)
 {
   echo "received request".PHP_EOL;
@@ -441,6 +459,8 @@ function requestProcessor($request)
 	 return getGames();
     case "getOddsSportsbook":
 	 return getGamesSportsbook($request['sportsbook']);
+    case "sendBet":
+	  return sendBet($request);
   }
   return array("returnCode" => '0', 'message'=>"Server received request and processed");
 }
