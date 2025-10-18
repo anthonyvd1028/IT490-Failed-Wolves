@@ -62,7 +62,7 @@ case "sendBet":
 	$response = $client->send_request($rabbitRequest);
 	echo json_encode(array('message' => $response['message']));
 	break;
-
+}
 exit(0);
 
 ?> 
