@@ -55,12 +55,12 @@ case "getOddsSportsbook":
 	echo json_encode(array('data' => $response["games"]));
 	break;
 case "sendBet":
-	$rabbitRequest = array();;
+	$rabbitRequest = array();
 	$rabbitRequest['type'] = "sendBet";
 	$rabbitRequest['sessionId'] = $request["sessionId"];
 	$rabbitRequest['bet'] = $request['bet'];
 	$response = $client->send_request($rabbitRequest);
-	echo json_encode(array('message' => $response['message'];
+	echo json_encode(array('message' => $response['message']));
 	break;
 
 exit(0);
