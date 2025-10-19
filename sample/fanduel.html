@@ -34,7 +34,7 @@
         games.onreadystatechange = function () {
           if (this.readyState == 4 && this.status == 200) {
             const results = JSON.parse(this.responseText);
-            console.log(results); 
+            console.log(results); // Keep for debugging
             renderOddsTables(results);
           }
         };
@@ -42,7 +42,7 @@
       }
     };
 
-    // Format time
+    // Format start time
     function formatTime(str) {
       const d = new Date(str.replace(" ", "T"));
       return d.toLocaleString("en-US", {
@@ -53,7 +53,7 @@
       });
     }
 
-    // Render odds data
+    // Render all odds cards
     function renderOddsTables(data) {
       const container = document.getElementById("oddsContainer");
       const events = data.data.events;
@@ -63,16 +63,51 @@
       }
     }
 
+    // Store selected bets
+    let selectedBets = [];
+
+    // Toggle selection
+    function toggleBetSelection(cell, betInfo) {
+      const index = selectedBets.findIndex(
+        (b) =>
+          b.team === betInfo.team &&
+          b.type === betInfo.type &&
+          b.game === betInfo.game
+      );
+
+      if (index > -1) {
+        selectedBets.splice(index, 1);
+        cell.classList.remove("selected");
+      } else {
+        selectedBets.push(betInfo);
+        cell.classList.add("selected");
+      }
+
+      updateBetBar();
+    }
+
+    // Update floating bet bar
+    function updateBetBar() {
+      const betBar = document.getElementById("betBar");
+      const betCount = document.getElementById("betCount");
+
+      if (selectedBets.length > 0) {
+        betBar.style.bottom = "0";
+        betCount.textContent = selectedBets.length;
+      } else {
+        betBar.style.bottom = "-80px";
+      }
+    }
+
+    // Create a single game card
     function renderOneGame(game, mount) {
       const block = document.createElement("div");
       block.className = "odds-block";
 
       const match = document.createElement("div");
       match.textContent = `${game.away} @ ${game.home}`;
-
       const time = document.createElement("div");
       time.textContent = `Start Time: ${formatTime(game.startsAt)}`;
-
       block.appendChild(match);
       block.appendChild(time);
 
@@ -91,20 +126,34 @@
         <tbody>
           <tr>
             <td><strong>${game.home}</strong></td>
-            <td>${game.odds.fanduel.homeML.odds}</td>
-            <td>${game.odds.fanduel.homeSpread.odds}<br>${game.odds.fanduel.homeSpread.value}</td>
-            <td>${game.odds.fanduel.over.odds}<br>O ${game.odds.fanduel.over.value}</td>
+            <td class="bet-cell" data-type="ML">${game.odds.fanduel.homeML.odds}</td>
+            <td class="bet-cell" data-type="Spread">${game.odds.fanduel.homeSpread.odds}<br>${game.odds.fanduel.homeSpread.value}</td>
+            <td class="bet-cell" data-type="O/U">${game.odds.fanduel.over.odds}<br>O ${game.odds.fanduel.over.value}</td>
           </tr>
           <tr>
             <td><strong>${game.away}</strong></td>
-            <td>${game.odds.fanduel.awayML.odds}</td>
-            <td>${game.odds.fanduel.awaySpread.odds}<br>${game.odds.fanduel.awaySpread.value}</td>
-            <td>${game.odds.fanduel.under.odds}<br>U ${game.odds.fanduel.under.value}</td>
+            <td class="bet-cell" data-type="ML">${game.odds.fanduel.awayML.odds}</td>
+            <td class="bet-cell" data-type="Spread">${game.odds.fanduel.awaySpread.odds}<br>${game.odds.fanduel.awaySpread.value}</td>
+            <td class="bet-cell" data-type="O/U">${game.odds.fanduel.under.odds}<br>U ${game.odds.fanduel.under.value}</td>
           </tr>
         </tbody>
       `;
       block.appendChild(table);
       mount.appendChild(block);
+
+      // Clickable bet cells
+      table.querySelectorAll(".bet-cell").forEach((cell) => {
+        cell.addEventListener("click", () => {
+          const type = cell.getAttribute("data-type");
+          const team = cell.parentElement.children[0].textContent.trim();
+          toggleBetSelection(cell, {
+            game: `${game.away} @ ${game.home}`,
+            team,
+            type,
+            value: cell.innerText.trim(),
+          });
+        });
+      });
     }
   </script>
 </head>
@@ -148,6 +197,13 @@
 
     <div id="oddsContainer"></div>
   </div>
+
+  <!-- Floating Bet Bar -->
+  <div id="betBar">
+    <span id="betCount">0</span> bets selected
+    <button id="placeBetBtn">Place Bet</button>
+  </div>
 </body>
 </html>
+
 

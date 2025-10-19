@@ -216,4 +216,52 @@ body {
   border-bottom: none;
 }
 
+.bet-cell {
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.bet-cell:hover {
+  background: rgba(201,218,234,0.12);
+}
+
+.bet-cell.selected {
+  background: rgba(201,218,234,0.25);
+  color: var(--columbia);
+  font-weight: 700;
+  transform: scale(1.05);
+}
+
+#betBar {
+  position: fixed;
+  bottom: -80px;
+  left: 0;
+  right: 0;
+  background: rgba(61,49,74,0.95);
+  color: var(--text);
+  font-weight: 500;
+  text-align: center;
+  padding: 1rem;
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.4);
+  transition: bottom 0.3s ease;
+  z-index: 1000;
+}
+
+#betBar button {
+  background: var(--eggplant);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.6rem 1.2rem;
+  font-weight: 600;
+  margin-left: 1rem;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+#betBar button:hover {
+  background: #7a596a;
+  transform: translateY(-1px);
+}
+
 
