@@ -430,14 +430,28 @@ function sendBet($bet){
 
     }
     echo "Succesfully connected to database".PHP_EOL;
+
+    $sessionId = $bet['sessionId'];
+
+
+    $query = "SELECT username FROM sessions WHERE session_token = ?";
+    $stmt->bind_param("s", $sessionId);
+    $stmt->execute();
+    $stmt->bind_result($username);
+    $stmt->fetch();
+    $stmt->close();
+
+    $wager = $bet['bet']['wager'];
     $betId = uniqid("BET_", true);
-    $insert = "INSERT INTO bets (OddID, UserID, WageID, BetID) VALUES ($oddId, $userId, $wageId, $betId)";
-    $insertResp = $mydb->query($insert);
-    if ($mydb->errno != 0) {
-        echo "failed to execute insert query:" . PHP_EOL;
-        exit(0);
+    
+    foreach ($bet['bet']['legs'] as $leg) {
+	    $insert = "INSERT INTO bets (BetID, Username, OddID, Wager) VALUES ('$betId', ?, ?, ?)";
+	    $stmt->bind_param("ssd", $username, $leg, $wager);
+	    $stmt->execute();
+	    $stmt->close();
     }
 
+    return array('message' => 'Bet Placed');
 }
 
 function requestProcessor($request)
