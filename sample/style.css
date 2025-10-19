@@ -62,11 +62,6 @@ body {
   transform: translateY(-1px);
 }
 
-.nav-links a.disabled {
-  display: none;
-}
-
-/* 👤 User Icon Animation */
 .nav-links a span {
   vertical-align: middle;
   transition: transform 0.25s ease;
@@ -101,68 +96,6 @@ body {
   margin-bottom: 1.5rem;
   font-size: 1.8rem;
   font-weight: 600;
-}
-
-.container label {
-  display: block;
-  text-align: left;
-  margin: 0.8rem 0 0.3rem;
-  color: var(--thistle);
-  font-size: 0.9rem;
-  font-weight: 500;
-}
-
-.container input {
-  width: 100%;
-  max-width: 340px;
-  padding: 0.65rem 0.9rem;
-  border: 1px solid rgba(201,218,234,.25);
-  border-radius: 8px;
-  background-color: #231b2d;
-  color: var(--text);
-  font-size: 0.95rem;
-  transition: all 0.25s ease;
-}
-
-.container input:focus {
-  outline: none;
-  border-color: var(--columbia);
-  box-shadow: 0 0 0 3px rgba(201,218,234,.25);
-}
-
-/* BUTTON */
-button {
-  margin-top: 1.25rem;
-  width: 100%;
-  padding: 0.8rem 1.2rem;
-  background-color: var(--eggplant);
-  border: none;
-  border-radius: 10px;
-  color: #fff;
-  font-weight: 600;
-  font-size: 1rem;
-  cursor: pointer;
-  box-shadow: 0 8px 18px rgba(104,71,86,.35);
-  transition: background-color 0.25s ease, transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-button:hover {
-  background-color: #7a596a;
-  transform: translateY(-1px);
-  box-shadow: 0 10px 24px rgba(104,71,86,.45);
-}
-
-#textResponse {
-  margin-top: 1rem;
-  font-size: 0.95rem;
-  color: var(--thistle);
-}
-
-@media (max-width: 480px) {
-  .card {
-    width: 90%;
-    padding: 1.5rem;
-  }
 }
 
 /* SECOND BAR (Sportsbooks) */
@@ -204,19 +137,16 @@ button:hover {
   background: rgba(201,218,234,.10);
 }
 
+/* === FIXED ODDS TABLE GRID === */
+
 #oddsContainer {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1.2rem;
-  margin-top: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.8rem;
   width: 100%;
+  justify-content: center;
   box-sizing: border-box;
-}
-
-@media (max-width: 900px) {
-  #oddsContainer {
-    grid-template-columns: 1fr;
-  }
 }
 
 .odds-block {
@@ -224,47 +154,66 @@ button:hover {
   border: 1px solid rgba(201,218,234,.18);
   border-radius: 12px;
   box-shadow: 0 8px 24px rgba(0,0,0,.35);
-  padding: 1rem;
+  padding: 1rem 1.25rem;
   overflow: hidden;
   width: 100%;
+  max-width: 520px;
+  margin: 0 auto;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.odds-table {
-  width: 100%;
-  border-collapse: collapse;
-  table-layout: fixed;
-  word-wrap: break-word;
-}
-
-.odds-table th,
-.odds-table td {
-  padding: .6rem .8rem;
-  border-bottom: 1px solid rgba(201,218,234,.12);
-  text-align: left;
-  vertical-align: top;
-  white-space: normal;
-}
-
-.odds-table thead th {
-  color: var(--columbia);
-  font-weight: 700;
-}
-
-.odds-table tbody tr:last-child td {
-  border-bottom: none;
+.odds-block:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 28px rgba(0,0,0,.45);
 }
 
 .odds-block div:first-child {
   text-align: left;
   color: var(--columbia);
   font-weight: 600;
-  margin-bottom: 0.3rem;
+  margin-bottom: 0.25rem;
+  font-size: 1.05rem;
 }
 
 .odds-block div:nth-child(2) {
   text-align: left;
   font-size: 0.9rem;
   color: var(--thistle);
-  margin-bottom: 0.6rem;
+  margin-bottom: 0.7rem;
 }
+
+.odds-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.odds-table th,
+.odds-table td {
+  padding: 0.65rem 0.8rem;
+  border-bottom: 1px solid rgba(201,218,234,.12);
+  text-align: center;
+  vertical-align: middle;
+  white-space: nowrap;
+  font-size: 0.95rem;
+}
+
+.odds-table th:first-child,
+.odds-table td:first-child {
+  text-align: left;
+  white-space: normal;
+  width: 40%;
+}
+
+.odds-table thead th {
+  color: var(--columbia);
+  font-weight: 700;
+  font-size: 1rem;
+  border-bottom: 1px solid rgba(201,218,234,.25);
+}
+
+.odds-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
 
