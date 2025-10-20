@@ -62,6 +62,13 @@ case "sendBet":
 	$response = $client->send_request($rabbitRequest);
 	echo json_encode(array('message' => $response['message']));
 	break;
+case "getPortfolio":
+	$rabbitRequest = array();
+	$rabbitRequest['type'] = "getPortfolio";
+	$rabbitRequest['sessionId'] = $request['sessionId'];
+	$response = $client->send_request($rabbitRequest);
+	echo json_encode(array('stats' => $response['stats']));
+	break;
 }
 exit(0);
 
