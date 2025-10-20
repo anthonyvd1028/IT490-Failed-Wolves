@@ -34,7 +34,8 @@ function getGamesSportsbook($sportsbook)
 			$homeTeam = $row['HomeTeam']; 
 			$awayTeam = $row['AwayTeam']; 
 			$startsAt = $row['StartsAt'];
-			
+			$oddId = $row['OddID'];
+
 			if (!isset($return['events'][$eventID]))
 			{
 				$return['events'] += array($eventID => array('home' => $homeTeam, 'away' => $awayTeam, 'startsAt' => $startsAt, 'odds' => array()));
@@ -46,17 +47,17 @@ function getGamesSportsbook($sportsbook)
 			}	
 			
 			if ($betType == "HomeML") {
-				$return['events'][$eventID]['odds'][$sportsbook]['homeML'] = array('value' => $value, 'odds' => $odds);	
+				$return['events'][$eventID]['odds'][$sportsbook]['homeML'] = array('value' => $value, 'odds' => $odds, 'oddId' => $oddId);	
 			} elseif ($betType == "AwayML") {
-				$return['events'][$eventID]['odds'][$sportsbook]['awayML'] = array('value' => $value, 'odds' => $odds);		
+				$return['events'][$eventID]['odds'][$sportsbook]['awayML'] = array('value' => $value, 'odds' => $odds, 'oddId' => $oddId);		
 			} elseif ($betType == "Over") {
-				$return['events'][$eventID]['odds'][$sportsbook]['over'] = array('value' => $value, 'odds' => $odds);	
+				$return['events'][$eventID]['odds'][$sportsbook]['over'] = array('value' => $value, 'odds' => $odds, 'oddId' => $oddId);	
 			} elseif ($betType == "Under") {
-				$return['events'][$eventID]['odds'][$sportsbook]['under'] = array('value' => $value, 'odds' => $odds);	
+				$return['events'][$eventID]['odds'][$sportsbook]['under'] = array('value' => $value, 'odds' => $odds, 'oddId' => $oddId);	
 			} elseif ($betType == "HomeSpread") {
-				$return['events'][$eventID]['odds'][$sportsbook]['homeSpread'] = array('value' => $value, 'odds' => $odds);	
+				$return['events'][$eventID]['odds'][$sportsbook]['homeSpread'] = array('value' => $value, 'odds' => $odds, 'oddId' => $oddId);	
 			} elseif ($betType == "AwaySpread") {
-				$return['events'][$eventID]['odds'][$sportsbook]['awaySpread'] = array('value' => $value, 'odds' => $odds);	
+				$return['events'][$eventID]['odds'][$sportsbook]['awaySpread'] = array('value' => $value, 'odds' => $odds, 'oddId' => $oddId);	
 			} 	
 
 		}
