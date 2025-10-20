@@ -471,7 +471,7 @@ function getPortfolio($ID)
     	}
     	echo "Succesfully connected to database".PHP_EOL;
 
-	$query = "SELECT * FROM Portfolio LEFT JOIN users ON users.ID = Portfolio.UserID WHERE Portfolio.UserID = '$ID';";    
+	$query = "SELECT * FROM Portfolio LEFT JOIN users ON users.ID = Portfolio.UserID LEFT JOIN sessions ON sessions.username = users.username WHERE sessions.session_token = '$ID';";    
 
 	$results = $mydb->query($query);
 	$results = $results->fetch_assoc();
