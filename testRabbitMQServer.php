@@ -462,6 +462,23 @@ function sendBet($bet){
     return array('message' => 'Bet Placed');
 }
 
+function getPortfolio($ID)
+{
+    	$mydb = new mysqli('127.0.0.1' , 'admin' , 'AdminPass123!' , 'IT_490');
+    	if ($mydb->connect_errno != 0) {
+        	echo "Failed to connect to database: " . $mydb->connect_error . PHP_EOL;
+		exit(0);
+    	}
+    	echo "Succesfully connected to database".PHP_EOL;
+
+	$query = "SELECT * FROM Portfolio LEFT JOIN users ON users.ID = Portfolio.UserID WHERE Portfolio.UserID = '$ID';";    
+
+	$results = $mydb->query($query);
+	$results = $results->fetch_assoc();
+
+	return array('stats' => array('payout' => $results['Payout'], 'betsWon' => $results['BetsWon'], 'betsLost' => $results['BetsLost'], 'betsPlaces' => $results['BetsPlaced'], 'created' => $results['created_at']));
+}
+
 function requestProcessor($request)
 {
   echo "received request".PHP_EOL;
@@ -486,6 +503,8 @@ function requestProcessor($request)
 	 return getGamesSportsbook($request['sportsbook']);
     case "sendBet":
 	  return sendBet($request);
+    case "getPortfolio":
+	  return getPortfolio($request['sessionId']);
   }
   return array("returnCode" => '0', 'message'=>"Server received request and processed");
 }
