@@ -69,7 +69,22 @@ case "getPortfolio":
 	$response = $client->send_request($rabbitRequest);
 	echo json_encode(array('stats' => $response['stats']));
 	break;
+case "insertWatchlist":
+	$rabbitRequest = array();
+	$rabbitRequest['type'] = "insertWatchlist";
+	$rabbitRequest['sessionId'] = $request['sessionId'];
+	$rabbitRequest['eventId'] = $request['eventId'];
+	$rabbitRequest['oddId'] = $request['oddId'];
+	$response = $client->send_request($rabbitRequest);
+	echo json_encode(array('message' => $response['message']));
+	break;
+case "getWatchlist":
+	$rabbitRequest = array();
+	$rabbitRequest['type'] = "getWatchlist";
+	$rabbitRequest['sessionId'] = $request['sessionId'];
+	$response = $client->send_request($rabbitRequest);
+	echo json_encode(array('watchlist' => $response['watchlist']));
+	break;
 }
 exit(0);
-
 ?> 
