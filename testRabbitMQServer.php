@@ -3,6 +3,7 @@
 require_once('path.inc');
 require_once('get_host_info.inc');
 require_once('rabbitMQLib.inc');
+require_once('Email.inc');
 
 function getGamesSportsbook($sportsbook)
 {	
@@ -375,8 +376,15 @@ function doRegister($username,$password,$password2)
         echo "failed to execute insert query:" . PHP_EOL;
         exit(0);
     }
-    if ($insertResp === TRUE) {
-        return array("returnCode" => '1', "message" => "You have successfully registered");
+    if ($insertResp === TRUE) {   
+	$query = "SELECT id FROM users WHERE username = '$username';";
+	$insertResp = $mydb->query($query);
+	$insertResp = $insertResp->fetch_assoc();
+	$ID = $insertResp['id'];
+	$query = "INSERT INTO Portfolio (UserID) VALUES ('$ID');";
+	$insertResp = $mydb->query($query);
+
+	return array("returnCode" => '1', "message" => "You have successfully registered");
     }
     return array("returnCode" => '2', 'message'=>"Registration failed");
 }
