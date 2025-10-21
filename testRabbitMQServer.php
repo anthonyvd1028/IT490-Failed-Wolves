@@ -500,14 +500,14 @@ function getPortfolio($ID)
     	}
     	echo "Succesfully connected to database".PHP_EOL;
 	
-	$query = "SELECT Bets.BetID, MIN(Win) AS Win, Payout, BetsWon, BetsPlaced, BetsLost, created_at FROM Portfolio LEFT JOIN users ON users.ID = Portfolio.UserID LEFT JOIN sessions ON sessions.username = users.username RIGHT JOIN Bets ON Portfolio.UserID = Bets.UserId WHERE sessions.session_token = '$ID' GROUP BY Bets.BetID;";
+	$query = "SELECT Bets.BetID, MIN(Win) AS Win FROM Portfolio LEFT JOIN users ON users.ID = Portfolio.UserID LEFT JOIN sessions ON sessions.username = users.username RIGHT JOIN Bets ON Portfolio.UserID = Bets.UserId WHERE sessions.session_token = '$ID' GROUP BY Bets.BetID;";
 
 	$bets = [];
 
-	$results = $mydb->query($query);	
-	if ($results->num_rows > 0)
+	$results2 = $mydb->query($query);	
+	if ($results2->num_rows > 0)
 	{
-		while ($row = $results->fetch_assoc())
+		while ($row = $results2->fetch_assoc())
 		{
 			var_dump($row);
 			if ($row['Win'] > 0)
@@ -521,7 +521,8 @@ function getPortfolio($ID)
 			$bets[] = array('betId' => $row['BetID'], 'status' => $status);
 		}
 	}
-	return array('stats' => array('payout' => $results['Payout'], 'betsWon' => $results['BetsWon'], 'betsLost' => $results['BetsLost'], 'betsPlaced' => $results['BetsPlaced'], 'created' => $results['created_at'], 'betHistory' => $bets));
+	//return array('stats' => array('payout' => $results['Payout'], 'betsWon' => $results['BetsWon'], 'betsLost' => $results['BetsLost'], 'betsPlaced' => $results['BetsPlaced'], 'created' => $results['created_at'], 'betHistory' => $bets));
+	return array('stats' => array('betHistory' => $bets));
 }
 
 function requestProcessor($request)
