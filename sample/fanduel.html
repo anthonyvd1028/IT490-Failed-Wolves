@@ -27,7 +27,7 @@
         };
         request.send("type=validateSession&sessionId=" + sessionId);
 
-        // get odds for FanDuel
+        // get the odds for FanDuel
         var games = new XMLHttpRequest();
         games.open("POST", "message.php", true);
         games.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
@@ -42,7 +42,7 @@
       }
     };
 
-    // Format start time
+    // format the start time
     function formatTime(str) {
       const d = new Date(str.replace(" ", "T"));
       return d.toLocaleString("en-US", {
@@ -53,7 +53,6 @@
       });
     }
 
-    // Render all odds cards
     function renderOddsTables(data) {
       const container = document.getElementById("oddsContainer");
       const events = data.data.events;
@@ -63,7 +62,7 @@
       }
     }
 
-    // store selected bets and odd IDs
+    // array lists to store bets and odd ids
     let selectedBets = [];
     let selectedOddIds = [];
 
@@ -84,7 +83,7 @@
       }
     }
 
-    // calculate combined (parlay-style) odds
+    // calculate the combined odds
     function calculateCombinedOdds() {
       if (selectedBets.length === 0) return "N/A";
 
@@ -98,7 +97,23 @@
       return combinedDisplayOdds;
     }
 
-    // toggle bet selection
+    // calculates the potential user payout (if user wins)
+    function calculatePayout(odds, wager) {
+	const numOdds = parseFloat(odds);
+	const amount = parseFloat(wager);
+	if (isNaN(numOdds) || isNaN(amount)) return "N/A";
+
+	let winnings;
+	    if (numOdds > 0) {
+		winnings = (numOdds / 100) * amount;
+	   } else {
+	     winnings = (100 / Math.abs(numOdds)) * amount;
+	   }
+	const total = amount + winnings;
+	return "$" + total.toFixed(2);
+    }
+
+    // toggle the bet selection
     function toggleBetSelection(cell, betInfo) {
       const index = selectedBets.findIndex(
         (b) =>
@@ -113,7 +128,7 @@
         selectedBets.splice(index, 1);
         cell.classList.remove("selected");
       } else {
-        // Select
+        // select
         selectedOddIds.push(betInfo.oddId);
         selectedBets.push(betInfo);
         cell.classList.add("selected");
@@ -124,23 +139,40 @@
       console.log("Selected Odd IDs:", selectedOddIds);
     }
 
-    // Update floating bet bar
     function updateBetBar() {
       const betBar = document.getElementById("betBar");
       const betCount = document.getElementById("betCount");
       const betOdds = document.getElementById("betOdds");
+      const wagerInput = document.getElementById("wagerInput");
+      const payoutDisplay = document.getElementById("potentialPayout");
 
       if (selectedBets.length > 0) {
         betBar.style.bottom = "0";
         betCount.textContent = selectedBets.length;
-        betOdds.textContent = calculateCombinedOdds();
+	const combinedOdds = calculateCombinedOdds();
+        betOdds.textContent = combinedOdds();
+	
+	const wager = wagerInput.value;
+	if (wager && combinedOdds !== "N/A") {
+	  payoutDisplay.textContent = calculatePayout(combinedOdds, wager);
+	} else {
+	  payoutDisplay.textContent = "N/A";
+	}
+
       } else {
         betBar.style.bottom = "-80px";
         betOdds.textContent = "N/A";
+	payoutDisplay.textContent = "N/A";
       }
     }
 
-    // create a single game card
+    // wager input
+    document.addEventListener("input", (event) => {
+      if (event.target.id === "wagerInput") {
+        updateBetBar();
+      }
+    });
+
     function renderOneGame(game, mount) {
       const block = document.createElement("div");
       block.className = "odds-block";
@@ -152,7 +184,6 @@
       block.appendChild(match);
       block.appendChild(time);
 
-      // odds table
       const table = document.createElement("table");
       table.className = "odds-table";
       table.innerHTML = `
@@ -244,10 +275,13 @@
     <div id="oddsContainer"></div>
   </div>
 
-  <!-- Floating Bet Bar -->
+  <!-- floating Bet Bar -->
   <div id="betBar">
     <span id="betCount">0</span> bets selected |
-    <strong>Combined Odds:</strong> <span id="betOdds">N/A</span>
+    <strong>Combined Odds:</strong> <span id="betOdds">N/A</span> |
+    <label for="wagerInput">Wager:</label>
+    <input type="number" id="wagerInput" placeholder="$" min="1" step="1">
+    <strong>Potential Payout:</strong> <span id="potentialPayout">N/A</span>
     <button id="placeBetBtn">Place Bet</button>
   </div>
 </body>
