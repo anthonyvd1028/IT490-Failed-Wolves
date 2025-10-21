@@ -65,6 +65,7 @@ case "sendBet":
 	$rabbitRequest = array();
 	$rabbitRequest['type'] = "sendBet";
 	$rabbitRequest['sessionId'] = $request["sessionId"];
+	$rabbitRequest['wager'] = $request['wager'];
 	$rabbitRequest['bet'] = $request['bet'];
 	$response = $client->send_request($rabbitRequest);
 	echo json_encode(array('message' => $response['message']));
