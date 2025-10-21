@@ -153,7 +153,7 @@
         betBar.style.bottom = "0";
         betCount.textContent = selectedBets.length;
 	const combinedOdds = calculateCombinedOdds();
-	betOdds.textContent = combinedOdds > 0 ? '+${combinedOdds}' : combinedOdds;
+	betOdds.textContent = combinedOdds > 0 ? `+${combinedOdds}` : combinedOdds;
 	
 	const wager = wagerInput.value;
 	if (wager && combinedOdds !== "N/A") {
