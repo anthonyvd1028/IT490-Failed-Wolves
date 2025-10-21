@@ -142,6 +142,28 @@
       console.log("Selected Odd IDs:", selectedOddIds);
     }
 
+    function sendBet() {
+        var bet = new XMLHttpRequest();
+        bet.open("POST", "message.php", true);
+        bet.setRequestHeader("Content-Type", "application/jdon");
+        bet.onreadystatechange = function () {
+        	if (this.readyState == 4 && this.status == 200) {
+			console.log("test");
+		}	
+	};
+	let token = sessionStorage.getItem("sessionId");
+	const bet = {
+		type: "sendBet",
+		sessionId: token,
+		wager: wagerInput.value,
+		bet: selectedOddIds
+	};
+        bet.send(JSON.stringify(bet));
+   	 
+
+
+    }
+
     function updateBetBar() {
       const betBar = document.getElementById("betBar");
       const betCount = document.getElementById("betCount");
@@ -285,7 +307,7 @@
     <label for="wagerInput">Wager:</label>
     <input type="number" id="wagerInput" placeholder="$" min="1" step="1">
     <strong>Potential Payout:</strong> <span id="potentialPayout">N/A</span>
-    <button id="placeBetBtn">Place Bet</button>
+    <button id="placeBetBtn" onclick="sendBet()">Place Bet</button>
   </div>
 </body>
 </html>
