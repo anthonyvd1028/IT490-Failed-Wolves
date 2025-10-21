@@ -141,12 +141,12 @@
       console.log("Selected Bets:", selectedBets);
       console.log("Selected Odd IDs:", selectedOddIds);
     }
-
+/*
     function sendBet() {
-        var bet = new XMLHttpRequest();
-        bet.open("POST", "message.php", true);
-        bet.setRequestHeader("Content-Type", "application/jdon");
-        bet.onreadystatechange = function () {
+        var sentBet = new XMLHttpRequest();
+        sentBet.open("POST", "message.php", true);
+        sentBet.setRequestHeader("Content-Type", "application/jdon");
+        sentBet.onreadystatechange = function () {
         	if (this.readyState == 4 && this.status == 200) {
 			console.log("test");
 		}	
@@ -158,12 +158,12 @@
 		wager: wagerInput.value,
 		bet: selectedOddIds
 	};
-        bet.send(JSON.stringify(bet));
-   	 
+        sentBet.send(JSON.stringify(bet));
+
 
 
     }
-
+*/
     function updateBetBar() {
       const betBar = document.getElementById("betBar");
       const betCount = document.getElementById("betCount");
