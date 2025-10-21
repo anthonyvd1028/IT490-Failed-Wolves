@@ -459,7 +459,7 @@ function sendBet($bet){
 	    $results = $mydb->query($query);
     }
     
-    $query = "UPDATE Portfolio SET BetsPlaced = BetsPlaced + 1 WHERE UserID = '$userId';";
+    $query = "UPDATE Portfolio SET BetsPlaced = BetsPlaced + 1, Payout = Payout - $wager WHERE UserID = '$userId';";
     $results = $mydb->query($query);
     return array('message' => 'Bet Placed');
 }
