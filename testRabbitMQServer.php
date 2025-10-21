@@ -472,7 +472,7 @@ function insertWatchlist($request)
         exit(0);
     }
    echo "Succesfully connected to database".PHP_EOL;
-   $query = "SELECT * FROM users LEFT JOIN sessions ON user.username = sessions.username WHERE sessions.session_token = '$sessionId'";
+   $query = "SELECT * FROM users LEFT JOIN sessions ON user.username = sessions.username WHERE sessions.session_token = '$sessionId';";
    $results = $mydb->query($query);
    $results = $results->fetch_assoc();
 
@@ -481,14 +481,14 @@ function insertWatchlist($request)
    $oddId = $request['oddId'];
    $sessionId = $request['sessionId'];
 
-   $query2 = "INSERT INTO watchlist (UserID, EventID, OddID) VALUES ($userId, $eventId, $oddId)"
+   $query = "INSERT INTO watchlist (UserID, EventID, OddID) VALUES ($userId, $eventId, $oddId);";
    $response = $mydb->query($query);
    if ($mydb->errno != 0) {
        echo "failed to execute query:" . PHP_EOL;
        exit(0);
     }
 
-   return array('message' => 'Added to watchlist')
+   return array('message' => 'Added to watchlist');
 }
 
 function getPortfolio($ID)
