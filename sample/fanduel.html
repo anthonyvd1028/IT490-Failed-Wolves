@@ -85,7 +85,7 @@
 
     // calculate the combined odds
     function calculateCombinedOdds() {
-      if (selectedBets.length === 0) return "N/A";
+      if (selectedBets.length === 0) return null;
 
       let totalDecimal = 1;
       selectedBets.forEach((bet) => {
@@ -93,7 +93,10 @@
         totalDecimal *= convertToDecimalOdds(odds);
       });
 
-      const combinedDisplayOdds = convertToDisplayOdds(totalDecimal);
+      const combinedDisplayOdds = totalDecimal >= 2.0
+	? Math.round((totalDecimal -1) * 100)
+	: -Math.round(100 / (totalDecimal - 1));
+
       return combinedDisplayOdds;
     }
 
@@ -150,7 +153,7 @@
         betBar.style.bottom = "0";
         betCount.textContent = selectedBets.length;
 	const combinedOdds = calculateCombinedOdds();
-        betOdds.textContent = combinedOdds();
+	betOdds.textContent = combinedOdds > 0 ? '+${combinedOdds}' : combinedOdds;
 	
 	const wager = wagerInput.value;
 	if (wager && combinedOdds !== "N/A") {
