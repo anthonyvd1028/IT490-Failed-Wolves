@@ -521,7 +521,7 @@ function requestProcessor($request)
     case "validate_session":
         return validateSession($request['sessionId']);
     case "registration":
-        return doRegister($request['username'],$request['password'],$request['password2']);
+        return doRegister($request['username'],$request['password'],$request['password2'],$request['email']);
     case "insertData":
 	return insertData($request);
     case "insertEvent":
