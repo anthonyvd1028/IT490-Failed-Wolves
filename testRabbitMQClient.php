@@ -15,10 +15,8 @@ else
 }
 
 $request = array();
-$request['type'] = "Login";
-$request['username'] = "steve";
-$request['password'] = "password";
-$request['message'] = $msg;
+$request['type'] = "getPortfolio";
+$request['sessionId'] = "3b63a2fa4a5e34293d164c917acbb61684169aaa809d8bb81268e5e065791200";
 $response = $client->send_request($request);
 //$response = $client->publish($request);
 
