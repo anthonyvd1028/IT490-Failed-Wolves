@@ -141,8 +141,8 @@
       console.log("Selected Bets:", selectedBets);
       console.log("Selected Odd IDs:", selectedOddIds);
     }
-/*
-    function sendBet() {
+
+    window.sendBet = function() {
         var sentBet = new XMLHttpRequest();
         sentBet.open("POST", "message.php", true);
         sentBet.setRequestHeader("Content-Type", "application/jdon");
@@ -159,11 +159,8 @@
 		bet: selectedOddIds
 	};
         sentBet.send(JSON.stringify(bet));
-
-
-
     }
-*/
+
     function updateBetBar() {
       const betBar = document.getElementById("betBar");
       const betCount = document.getElementById("betCount");
