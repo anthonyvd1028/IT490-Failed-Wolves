@@ -442,23 +442,21 @@ function sendBet($bet){
     echo "Succesfully connected to database".PHP_EOL;
 
     $sessionId = $bet['sessionId'];
+    $wager = $bet['wager'];
 
+    $query = "SELECT * FROM sessions LEFT JOIN users ON sessions.username = users.username WHERE sessions.session_token = ?;";
+    echo $query . PHP_EOL;
+    $results = $mydb->query($query);
+    $results = $results->fetch_assoc();
 
-    $query = "SELECT username FROM sessions WHERE session_token = ?";
-    $stmt->bind_param("s", $sessionId);
-    $stmt->execute();
-    $stmt->bind_result($username);
-    $stmt->fetch();
-    $stmt->close();
+    $userId = $results['id'];
 
-    $wager = $bet['bet']['wager'];
     $betId = uniqid("BET_", true);
     
-    foreach ($bet['bet']['legs'] as $leg) {
-	    $insert = "INSERT INTO bets (BetID, Username, OddID, Wager) VALUES ('$betId', ?, ?, ?)";
-	    $stmt->bind_param("ssd", $username, $leg, $wager);
-	    $stmt->execute();
-	    $stmt->close();
+    foreach ($bet['bet'] as $leg) {
+	    $query = "INSERT INTO Bets (BetID, UserId, OddID, Wager) VALUES ('$betId', '$userId', '$leg', '$wager');";
+   	    echo $query . PHP_EOL;
+	    $results = $mydb->query($query);
     }
 
     return array('message' => 'Bet Placed');
