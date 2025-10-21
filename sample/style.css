@@ -24,7 +24,6 @@ body {
               linear-gradient(135deg, var(--raisin) 0%, var(--violet) 60%);
 }
 
-/* NAVBAR */
 .navbar {
   display: flex;
   justify-content: space-between;
@@ -71,7 +70,6 @@ body {
   transform: scale(1.1);
 }
 
-/* LAYOUT */
 .container {
   flex: 1;
   display: flex;
@@ -98,7 +96,6 @@ body {
   font-weight: 600;
 }
 
-/* SECOND BAR (Sportsbooks) */
 .subnav {
   background: rgba(61,49,74,0.9);
   border-bottom: 1px solid rgba(201,218,234,.18);
@@ -136,8 +133,6 @@ body {
   border-color: rgba(201,218,234,.35);
   background: rgba(201,218,234,.10);
 }
-
-/* === FIXED ODDS TABLE GRID === */
 
 #oddsContainer {
   display: grid;
