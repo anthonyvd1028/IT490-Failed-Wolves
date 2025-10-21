@@ -349,7 +349,7 @@ function doLogin($username,$password)
     return array("returnCode" => '2', 'message'=>"Invalid Username or Password");
 }
 
-function doRegister($username,$password,$password2)
+function doRegister($username,$password,$password2, $email)
 {
     $mydb = new mysqli('127.0.0.1' , 'admin' , 'AdminPass123!' , 'IT_490');
     if ($mydb->connect_errno != 0) {
@@ -372,7 +372,7 @@ function doRegister($username,$password,$password2)
 
     $password = hash('sha256', $password);
 
-    $insert = "INSERT INTO users (username, password) VALUES ('" . $username . "', '" . $password . "');";
+    $insert = "INSERT INTO users (username, password, email) VALUES ('" . $username . "', '" . $password . "', '" . $email . "');";
     $insertResp = $mydb->query($insert);
     if ($mydb->errno != 0) {
         echo "failed to execute insert query:" . PHP_EOL;
@@ -472,7 +472,7 @@ function insertWatchlist($request)
         exit(0);
     }
    echo "Succesfully connected to database".PHP_EOL;
-   $query = "SELECT * FROM users LEFT JOIN sessions ON user.username = sessions.username WHERE sessions.session_token = '$sessionId'";
+   $query = "SELECT * FROM users LEFT JOIN sessions ON user.username = sessions.username WHERE sessions.session_token = '$sessionId';";
    $results = $mydb->query($query);
    $results = $results->fetch_assoc();
 
@@ -481,14 +481,14 @@ function insertWatchlist($request)
    $oddId = $request['oddId'];
    $sessionId = $request['sessionId'];
 
-   $query2 = "INSERT INTO watchlist (UserID, EventID, OddID) VALUES ($userId, $eventId, $oddId)"
+   $query = "INSERT INTO watchlist (UserID, EventID, OddID) VALUES ($userId, $eventId, $oddId);";
    $response = $mydb->query($query);
    if ($mydb->errno != 0) {
        echo "failed to execute query:" . PHP_EOL;
        exit(0);
     }
 
-   return array('message' => 'Added to watchlist')
+   return array('message' => 'Added to watchlist');
 }
 
 function getPortfolio($ID)
@@ -521,7 +521,7 @@ function requestProcessor($request)
     case "validate_session":
         return validateSession($request['sessionId']);
     case "registration":
-        return doRegister($request['username'],$request['password'],$request['password2']);
+        return doRegister($request['username'],$request['password'],$request['password2'],$request['email']);
     case "insertData":
 	return insertData($request);
     case "insertEvent":
