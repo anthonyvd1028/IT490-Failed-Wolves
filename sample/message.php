@@ -11,7 +11,13 @@ if (!isset($_POST))
         echo json_encode($msg);
         exit(0);
 }
-$request = $_POST;
+if (!empty($_POST))
+{
+	$request = $_POST;
+} else {
+	$request = json_decode(file_get_contents('php://input'), true);	
+}
+
 $response = "unsupported request type, politely FUCK OFF";
 switch ($request["type"])
 {
