@@ -458,7 +458,9 @@ function sendBet($bet){
    	    echo $query . PHP_EOL;
 	    $results = $mydb->query($query);
     }
-
+    
+    $query = "UPDATE Portfolio SET BetsPlaced = BetsPlaced + 1 WHERE UserID = '$userId';";
+    $results = $mydb->query($query);
     return array('message' => 'Bet Placed');
 }
 
