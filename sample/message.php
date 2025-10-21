@@ -30,7 +30,8 @@ case "registration":
         $rabbitRequest['username'] = $request["uname"];
         $rabbitRequest['password'] = $request["pword"];
         $rabbitRequest['password2'] = $request["pword2"];
-        $response = $client->send_request($rabbitRequest);
+	$rabbitRequest['email'] = $request["email"];       
+	$response = $client->send_request($rabbitRequest);
 	echo json_encode(array('message' => $response["message"]));
 	break;
 

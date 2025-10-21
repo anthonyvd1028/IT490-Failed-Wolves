@@ -349,7 +349,7 @@ function doLogin($username,$password)
     return array("returnCode" => '2', 'message'=>"Invalid Username or Password");
 }
 
-function doRegister($username,$password,$password2)
+function doRegister($username,$password,$password2, $email)
 {
     $mydb = new mysqli('127.0.0.1' , 'admin' , 'AdminPass123!' , 'IT_490');
     if ($mydb->connect_errno != 0) {
@@ -372,7 +372,7 @@ function doRegister($username,$password,$password2)
 
     $password = hash('sha256', $password);
 
-    $insert = "INSERT INTO users (username, password) VALUES ('" . $username . "', '" . $password . "');";
+    $insert = "INSERT INTO users (username, password, email) VALUES ('" . $username . "', '" . $password . "', '" . $email . "');";
     $insertResp = $mydb->query($insert);
     if ($mydb->errno != 0) {
         echo "failed to execute insert query:" . PHP_EOL;

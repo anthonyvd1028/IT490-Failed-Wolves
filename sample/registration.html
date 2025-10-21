@@ -12,6 +12,7 @@
     }
 
     function SendRegistrationRequest() {
+      var email = encodeURIComponent(document.getElementById("email").value);
       var username = document.getElementById("uname").value;
       var password = document.getElementById("pword").value;
       var password2 = document.getElementById("pword2").value;
@@ -24,7 +25,7 @@
           HandleRegistrationResponse(this.responseText);
         }
       };
-      request.send("type=registration&uname=" + username + "&pword=" + password + "&pword2=" + password2);
+      request.send("type=registration&uname=" + username + "&pword=" + password + "&pword2=" + password2 + "&email=" + email);
     }
   </script>
 </head>
@@ -40,6 +41,10 @@
   <div class="container">
     <div class="card">
       <h1>Register</h1>
+
+      
+      <label for="email">Email:</label>
+      <input type="text" id="email" name="email">
 
       <label for="uname">Username:</label>
       <input type="text" id="uname" name="uname">
