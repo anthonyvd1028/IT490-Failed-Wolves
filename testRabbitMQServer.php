@@ -444,7 +444,7 @@ function sendBet($bet){
     $sessionId = $bet['sessionId'];
     $wager = $bet['wager'];
 
-    $query = "SELECT * FROM sessions LEFT JOIN users ON sessions.username = users.username WHERE sessions.session_token = ?;";
+    $query = "SELECT * FROM sessions LEFT JOIN users ON sessions.username = users.username WHERE sessions.session_token = '$sessionId';";
     echo $query . PHP_EOL;
     $results = $mydb->query($query);
     $results = $results->fetch_assoc();
