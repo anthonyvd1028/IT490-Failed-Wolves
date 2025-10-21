@@ -500,11 +500,17 @@ function getPortfolio($ID)
     	}
     	echo "Succesfully connected to database".PHP_EOL;
 
-	$query = "SELECT * FROM Portfolio LEFT JOIN users ON users.ID = Portfolio.UserID LEFT JOIN sessions ON sessions.username = users.username WHERE sessions.session_token = '$ID';";    
+	$query = "SELECT * FROM Portfolio LEFT JOIN users ON users.ID = Portfolio.UserID LEFT JOIN sessions ON sessions.username = users.username RIGHT JOIN Bets ON Portfolio.UserID = Bets.UserId WHERE sessions.session_token = '$ID' ORDER BY Bets.BetID;";
 
 	$results = $mydb->query($query);
-	$results = $results->fetch_assoc();
-
+	
+	if ($results->num_rows > 0)
+	{
+		while ($row = $results->fetch_assoc())
+		{
+			var_dump($row);
+		}
+	}
 	return array('stats' => array('payout' => $results['Payout'], 'betsWon' => $results['BetsWon'], 'betsLost' => $results['BetsLost'], 'betsPlaces' => $results['BetsPlaced'], 'created' => $results['created_at']));
 }
 
