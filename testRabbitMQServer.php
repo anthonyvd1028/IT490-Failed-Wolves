@@ -95,7 +95,8 @@ function getGames()
 			$homeTeam = $row['HomeTeam']; 
 			$awayTeam = $row['AwayTeam']; 
 			$startsAt = $row['StartsAt'];
-			
+			$oddId = $row['OddID'];
+
 			if (!isset($return['events'][$eventID]))
 			{
 				$return['events'] += array($eventID => array('home' => $homeTeam, 'away' => $awayTeam, 'startsAt' => $startsAt, 'odds' => array()));
@@ -107,17 +108,17 @@ function getGames()
 			}	
 			
 			if ($betType == "HomeML") {
-				$return['events'][$eventID]['odds'][$sportsbook]['homeML'] = array('value' => $value, 'odds' => $odds);	
+				$return['events'][$eventID]['odds'][$sportsbook]['homeML'] = array('value' => $value, 'odds' => $odds, 'oddId' => $oddId);	
 			} elseif ($betType == "AwayML") {
-				$return['events'][$eventID]['odds'][$sportsbook]['awayML'] = array('value' => $value, 'odds' => $odds);		
+				$return['events'][$eventID]['odds'][$sportsbook]['awayML'] = array('value' => $value, 'odds' => $odds, 'oddId' => $oddId);		
 			} elseif ($betType == "Over") {
-				$return['events'][$eventID]['odds'][$sportsbook]['over'] = array('value' => $value, 'odds' => $odds);	
+				$return['events'][$eventID]['odds'][$sportsbook]['over'] = array('value' => $value, 'odds' => $odds, 'oddId' => $oddId);	
 			} elseif ($betType == "Under") {
-				$return['events'][$eventID]['odds'][$sportsbook]['under'] = array('value' => $value, 'odds' => $odds);	
+				$return['events'][$eventID]['odds'][$sportsbook]['under'] = array('value' => $value, 'odds' => $odds, 'oddId' => $oddId);	
 			} elseif ($betType == "HomeSpread") {
-				$return['events'][$eventID]['odds'][$sportsbook]['homeSpread'] = array('value' => $value, 'odds' => $odds);	
+				$return['events'][$eventID]['odds'][$sportsbook]['homeSpread'] = array('value' => $value, 'odds' => $odds, 'oddId' => $oddId);	
 			} elseif ($betType == "AwaySpread") {
-				$return['events'][$eventID]['odds'][$sportsbook]['awaySpread'] = array('value' => $value, 'odds' => $odds);	
+				$return['events'][$eventID]['odds'][$sportsbook]['awaySpread'] = array('value' => $value, 'odds' => $odds, 'oddId' => $oddId);	
 			} 	
 
 		}
@@ -463,6 +464,33 @@ function sendBet($bet){
     return array('message' => 'Bet Placed');
 }
 
+function insertWatchlist($request)
+{
+   $mydb = new mysqli('127.0.0.1' , 'admin' , 'AdminPass123!' , 'IT_490');
+    if ($mydb->connect_errno != 0) {
+        echo "Failed to connect to database: " . $mydb->connect_error . PHP_EOL;
+        exit(0);
+    }
+   echo "Succesfully connected to database".PHP_EOL;
+   $query = "SELECT * FROM users LEFT JOIN sessions ON user.username = sessions.username WHERE sessions.session_token = '$sessionId'";
+   $results = $mydb->query($query);
+   $results = $results->fetch_assoc();
+
+   $userId = $response['ID'];
+   $eventId = $request['eventId'];
+   $oddId = $request['oddId'];
+   $sessionId = $request['sessionId'];
+
+   $query2 = "INSERT INTO watchlist (UserID, EventID, OddID) VALUES ($userId, $eventId, $oddId)"
+   $response = $mydb->query($query);
+   if ($mydb->errno != 0) {
+       echo "failed to execute query:" . PHP_EOL;
+       exit(0);
+    }
+
+   return array('message' => 'Added to watchlist')
+}
+
 function getPortfolio($ID)
 {
     	$mydb = new mysqli('127.0.0.1' , 'admin' , 'AdminPass123!' , 'IT_490');
@@ -504,6 +532,8 @@ function requestProcessor($request)
 	 return getGamesSportsbook($request['sportsbook']);
     case "sendBet":
 	  return sendBet($request);
+    case "insertWatchlist":
+         return insertWatchlist($request);
     case "getPortfolio":
 	  return getPortfolio($request['sessionId']);
   }
