@@ -5,6 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Portfolio</title>
   <script>
+	function handleResponse(port) {
+		document.getElementById("payout").innerHTML = "<strong>Payout</strong>" + port.payout;	  
+	}
+
 	window.onload = function () {
       	let sessionId = sessionStorage.getItem("sessionId");
       	if (!sessionId) {
@@ -30,11 +34,10 @@
                 portfolio.onreadystatechange = function () {
                         if (this.readyState == 4 && this.status == 200) {
                         	var portfolioResults = JSON.parse(this.responseText);
-				console.log(portfolioResults);
+				handleResponse(portfolioResults);
 			}
                 }
                 portfolio.send("type=getPortfolio&sessionId=" + sessionId);
-
 	}
     	}
 
@@ -57,7 +60,7 @@
       <h1>My Portfolio</h1>
       <p>Welcome to your account overview.</p>
       <ul style="text-align:left; margin:1rem auto; list-style:none; max-width:340px;">
-	<li><strong>Payout</strong> View your total amount of winnings.</li>
+	<li id="payout"><strong>Payout</strong> View your total amount of winnings.</li>
         <li><strong>Bets Won</strong> View the bets you won.</li>
         <li><strong>Bets Lost</strong> View the bets you lost.</li>
 	<li><strong>Bets Placed:</strong> View the current bets you have placed.</li>
@@ -66,6 +69,4 @@
     </div>
   </div>
 </body>
-</html>
-
-				
+</html>	
