@@ -6,7 +6,11 @@
   <title>Portfolio</title>
   <script>
 	function handleResponse(port) {
-		document.getElementById("payout").innerHTML = "<strong>Payout</strong>" + port.payout;	  
+		document.getElementById("payout").innerHTML = "<strong>Payout:</strong> " + port.stats.payout;	  	
+		document.getElementById("betsWon").innerHTML = "<strong>Bets Won:</strong> " + port.stats.betsWon;	  
+		document.getElementById("betsLost").innerHTML = "<strong>Bets Lost:</strong> " + port.stats.betsLost;	  
+		document.getElementById("betsPlaced").innerHTML = "<strong>Bets Placed:</strong> " + port.stats.betsPlaced;	  
+		document.getElementById("created").innerHTML = "<strong>Account Created On:</strong> " + port.stats.created;	  
 	}
 
 	window.onload = function () {
@@ -61,10 +65,10 @@
       <p>Welcome to your account overview.</p>
       <ul style="text-align:left; margin:1rem auto; list-style:none; max-width:340px;">
 	<li id="payout"><strong>Payout</strong> View your total amount of winnings.</li>
-        <li><strong>Bets Won</strong> View the bets you won.</li>
-        <li><strong>Bets Lost</strong> View the bets you lost.</li>
-	<li><strong>Bets Placed:</strong> View the current bets you have placed.</li>
-	<li><strong>Account Created On:</strong></li>
+        <li id="betsWon"><strong>Bets Won</strong> View the bets you won.</li>
+        <li id="betsLost"><strong>Bets Lost</strong> View the bets you lost.</li>
+	<li id="betsPlaced"><strong>Bets Placed:</strong> View the current bets you have placed.</li>
+	<li id="created"><strong>Account Created On:</strong></li>
       </ul>
     </div>
   </div>
