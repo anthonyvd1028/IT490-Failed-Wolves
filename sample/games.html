@@ -18,14 +18,88 @@
           if (this.readyState == 4 && this.status == 200) {
             if (JSON.parse(this.responseText).valid) {
               document.body.style.display = "block";
+	      displayGames();
             } else {
               window.location.href = "http://www.sample.com/login.html";
             }
           }               
         }
         request.send("type=validateSession&sessionId=" + sessionId);
+      };
+      
+      function displayGames() {
+	const games = new XMLHttpRequest();
+	games.open("POST", "message.php", true);
+	games.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+	games.onreadystatechange = function () {
+	   if (this.readyState == 4 && this.status == 200) {
+	      const results = JSON.parse(this.responseText);
+	      console.log(results);
+	      renderTable(results);
+            }
+	};
+	games.send("type=getOddsAllSportsbooks");
+
       }
-    }
+      
+      function renderTable(data) {
+	const events = data.data.events;
+	for (const key in events) {
+	   const game = events[key];
+
+	   const headerRow = document.createElement("tr");
+	   const cellHeader = document.createElement("td");
+	   cellHeader.colSpan = 9;
+	   cellHeader.className = "game-header";
+	   cellHeader.textContent = `${game.away} @ ${game.home} - ${formatTime(game.startsAt)}`;
+	   headerRow.appendChild(cellHeader);
+	   tableBody.appendChild(headerRow);
+	   
+
+	   const oddRows = [
+		{ label: "Away ML", keys: ["awayML"] },
+		{ label: "Home ML", keys: ["homeML"] },
+		{ label: "Home Spread", keys: ["homeSpread"] },
+		{ label: "Away Spread", keys: ["awaySpread"] },
+		{ label: "Over", keys: ["over"] },
+		{ label: "Under", keys: ["under"] }
+	   ];
+
+	   oddRows.forEach((rowInfo) => {
+		const tr = document.createElement("tr");
+		
+		const rowHeader = document.createElement("th");
+		rowHeader.textContent = rowInfo.label;
+		tr.appendChild(rowHeader);
+
+		const sportsbook = ["fanduel", "draftkings", "betmgm", "caesars", "espnbet", "bovada", "unibet", "pointsbet"];
+		sportsbook.forEach((book) => {  
+		   const td = document,createElement("td");
+		   const odds = game.odds[book];
+		   if (odds && odds[rowInfo.keys[0]]) {
+			const val = odds[rowInfo.keys[0]];
+			td.innerHTML = val.odds + (val.value ? `<br>${val.value}` : "");
+		   } else {
+			td.textContent = "-";
+		   }
+		   tr.appendChild(td);
+		});
+
+		tableBody.appendChild(tr);
+	    });
+	}
+}
+
+function fmtTime(str) {
+      const d = new Date(str.replace(" ", "T"));
+      return d.toLocaleString("en-US", {
+	  weekday: "short",
+	  hour: "numeric",
+	  minute: "2-digit",
+	  hour12: true
+      });
+  }
+
   </script>
 </head>
 <body style="display:none;">
@@ -34,7 +108,7 @@
     <h2>BetTracker</h2>
     <ul class="nav-links">
       <li><a href="index.html">Home</a></li>
-      <li><a href="games.html">View Games</a></li>
+      <li><a href="games.html" class="active">View Games</a></li>
       <li><a href="login.html">Login</a></li>
       <li><a href="registration.html">Register</a></li>
       <li><a href="portfolio.html">My Account</a></li>
