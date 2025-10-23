@@ -90,8 +90,8 @@
 		   const odds = game.odds[book];
 		   if (odds && odds[rowInfo.keys[0]]) {
 			const val = odds[rowInfo.keys[0]];
-			td.innerHTML = val.odds + (val.value ? `<br>${val.value}` : "");
-
+				     td.innerHTML = `<button>${val.odds}${val.value ? `<br>${val.value}` : ''}</button>`;
+			td.id = val.oddId;
 		   } else {
 			td.textContent = "-";
 		   }

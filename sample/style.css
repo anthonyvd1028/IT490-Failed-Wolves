@@ -295,4 +295,14 @@ body {
   font-size: 0.8rem;
 }
 
+.watchlist {
+	max-width: 1200;
+	margin: 0 auto;
+	padding: 20px;
+}
+
+.watchlistCard {
+width: 30%
+height: auto;
+}
 
