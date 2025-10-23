@@ -548,7 +548,7 @@ function getPortfolio($ID)
 				$descriptions[] = $msg;	
 			}
 
-			$bets[] = array('wager' => $wager, 'betId' => $betID, 'status' => $status, 'description' => implode("<br>", $descriptions));
+			$bets[] = array('wager' => $wager, 'betId' => $betID, 'status' => $status, 'description' => implode(",<br>", $descriptions));
 		
 		}
 	}
