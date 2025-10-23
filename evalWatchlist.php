@@ -1,5 +1,11 @@
 #!/usr/bin/php
-<?php 
+<?php
+$mydb = new mysqli('127.0.0.1', 'admin', 'AdminPass123!', 'IT_490');
+if ($mydb->connect_errno != 0) {
+	echo $mydb->connect_error . PHP_EOL;
+	exit(0);
+}
+
 $query = "SELECT * FROM Watchlist LEFT JOIN Odds ON Odds.OddID = Watchlist.OddID LEFT JOIN users ON users.id = Watchlist.UserID;";
 $results = $mydb->query($query);
 if ($mydb->errno != 0) {
