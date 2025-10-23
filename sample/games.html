@@ -117,7 +117,7 @@ function buttonHandle(button) {
       const req = new XMLHttpRequest();
       req.open("POST", "message.php", true);
       req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-	const parameters = `type=buttonHandle&sessionId=${encodeURIComponent(sessionId)}&home=${encodeURIComponent(game.home)}&away=${encodeURIComponent(game.away)}&startsAt=${encodeURIComponentgame.startsAt)}`;
+	const parameters = `type=buttonHandle&sessionId=${encodeURIComponent(sessionId)}&home=${encodeURIComponent(game.home)}&away=${encodeURIComponent(game.away)}&startsAt=${encodeURIComponent(game.startsAt)}`;
 	req.onreadystatechange = function () {
 		if (this.readyState == 4 && this.status == 200) {
 			const response = JSON.parse(this.responseText);
