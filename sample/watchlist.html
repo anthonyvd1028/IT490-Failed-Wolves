@@ -32,7 +32,10 @@
         watchlist.onreadystatechange = function () { 
           if (this.readyState == 4 && this.status == 200) {
             	const watch = JSON.parse(this.responseText);
-		console.log(watch);
+		const body = document.getElementByID("watchList");
+		watch.watchlist.forEach(entry => {
+			body.innerHTML += `<tr><<td>${entry.event}</td><td>${entry.sportsbook}</td><td>${entry.watching}</td><td>${entry.startTime}</td>td>${entry.odds}</td></tr>`;
+		});
             }
           }               
         }
@@ -73,22 +76,21 @@
   <div class="container">
     <div class="card">
       <h1>My Watchlist</h1>
-    </div>
-  </div>
-
-<table id="watchList" border="1">
+    	<table border="1">
 		<thead>
 			<tr>
 			   <th>Game</th>
 			   <th>Sportsbook</th>
-			   <th>Bets</th>
+			   <th>Bet</th>
 			   <th>Time</th>
+			   <th>Odds</th>
 			</tr>
 		</thead>
-		<tbody>
+		<tbody id="watchList">
 		</tbody>
-	</table>
-  
+	</table> 
+    </div>
+  </div>
 </body>
 </html>
 
