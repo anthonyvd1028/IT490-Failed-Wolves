@@ -122,10 +122,10 @@ function buttonHandle(button) {
 		if (this.readyState == 4 && this.status == 200) {
 			const response = JSON.parse(this.responseText);
 			console.log(response);
-			alert("Game added to watchlist.")
+			alert("Game added to watchlist.");
 		}
 	};
-	req.send(parameters)
+	req.send(parameters);
   }
 
 
