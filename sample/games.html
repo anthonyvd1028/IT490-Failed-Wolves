@@ -74,7 +74,7 @@
 
 		const sportsbook = ["fanduel", "draftkings", "betmgm", "caesars", "espnbet", "bovada", "unibet", "pointsbet"];
 		sportsbook.forEach((book) => {  
-		   const td = document,createElement("td");
+		   const td = document.createElement("td");
 		   const odds = game.odds[book];
 		   if (odds && odds[rowInfo.keys[0]]) {
 			const val = odds[rowInfo.keys[0]];
