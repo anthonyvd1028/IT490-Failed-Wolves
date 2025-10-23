@@ -9,7 +9,7 @@
 	  function insertWatchlist(button) {
 	  	const cell = button.parentElement;
 		var watchOddId = cell.id;
-		
+		let sessionId = sessionStorage.getItem("sessionId");	
 		const watchlist = new XMLHttpRequest();
         	watchlist.open("POST", "message.php", true);
         	watchlist.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
