@@ -524,9 +524,10 @@ function getPortfolio($ID)
 			}
 
 			$descriptions = [];
+			$wager = null;
 			$betID = $row['BetID'];
 
-			$query = "SELECT * FROM Bets LEFT JOIN Odds ON Odds.OddId = Bets.OddId LEFT JOIN Events ON Events.EventID = Odds.EventID WHERE Betss.BetID = '$betID';";
+			$query = "SELECT * FROM Bets LEFT JOIN Odds ON Odds.OddId = Bets.OddId LEFT JOIN Events ON Events.EventID = Odds.EventID WHERE Bets.BetID = '$betID';";
 			$results3 = $mydb->query($query);
 			while ($line = $results3->fetch_assoc())
 			{
@@ -543,11 +544,12 @@ function getPortfolio($ID)
 				} elseif ($line['BetType'] == "AwayML") {
 					$msg = $line['AwayTeam'] . " ML";
 				}
-
+				$wager = $line['Wager'];
 				$descriptions[] = $msg;	
 			}
 
-			$bets[] = array('wager' => $line['Wager'], 'betId' => $betID, 'status' => $status, 'description' => implode("<br>", $descriptions));
+			$bets[] = array('wager' => $wager, 'betId' => $betID, 'status' => $status, 'description' => implode("<br>", $descriptions));
+		
 		}
 	}
 	return array('stats' => array('payout' => $results['Payout'], 'betsWon' => $results['BetsWon'], 'betsLost' => $results['BetsLost'], 'betsPlaced' => $results['BetsPlaced'], 'created' => $results['created_at'], 'betHistory' => $bets));
