@@ -34,7 +34,7 @@
             	const watch = JSON.parse(this.responseText);
 		const body = document.getElementById("watchList");
 		watch.watchlist.forEach(entry => {
-			body.innerHTML += `<tr><<td>${entry.event}</td><td>${entry.sportsbook}</td><td>${entry.watching}</td><td>${entry.startTime}</td><td>${entry.odds}</td></tr>`;
+			body.innerHTML += `<tr><td>${entry.event}</td><td>${entry.sportsbook}</td><td>${entry.watching}</td><td>${entry.startTime}</td><td>${entry.odds}</td></tr>`;
 		});
             }
           }               
