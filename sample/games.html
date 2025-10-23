@@ -19,7 +19,7 @@
 	   		alert(results.message);
 		}
         	};
-        	watchlist.send("type=getOdds&sessionId="+sessionId+"&oddId="+watchOddId);
+        	watchlist.send("type=insertWatchlist&sessionId="+sessionId+"&oddId="+watchOddId);
 	  }
     window.onload = function () {
       let sessionId = sessionStorage.getItem("sessionId");
