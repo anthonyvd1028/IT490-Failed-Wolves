@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>All Games</title>
+  <title>BetTracker | All Games</title>
   <link rel="stylesheet" href="style.css">
   <script>
 
@@ -45,19 +45,19 @@
       }
       
       function renderTable(data) {
+	const tableBody = document.querySelector("#gameTable tbody");
+	tableBody.innerHTML = "";
 	const events = data.data.events;
 	for (const key in events) {
 	   const game = events[key];
-
 	   const headerRow = document.createElement("tr");
 	   const cellHeader = document.createElement("td");
 	   cellHeader.colSpan = 9;
 	   cellHeader.className = "game-header";
-	   cellHeader.textContent = `${game.away} @ ${game.home} - ${formatTime(game.startsAt)}`;
+	   cellHeader.textContent = `${game.away} @ ${game.home} - ${fmtTime(game.startsAt)}`;
 	   headerRow.appendChild(cellHeader);
 	   tableBody.appendChild(headerRow);
 	   
-
 	   const oddRows = [
 		{ label: "Away ML", keys: ["awayML"] },
 		{ label: "Home ML", keys: ["homeML"] },
@@ -69,7 +69,6 @@
 
 	   oddRows.forEach((rowInfo) => {
 		const tr = document.createElement("tr");
-		
 		const rowHeader = document.createElement("th");
 		rowHeader.textContent = rowInfo.label;
 		tr.appendChild(rowHeader);
@@ -92,8 +91,6 @@
 	    });
 	}
 }
-
-
 function fmtTime(str) {
       const d = new Date(str.replace(" ", "T"));
       return d.toLocaleString("en-US", {
