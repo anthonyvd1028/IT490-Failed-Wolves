@@ -6,6 +6,7 @@
   <title>All Games</title>
   <link rel="stylesheet" href="style.css">
   <script>
+
     window.onload = function () {
       let sessionId = sessionStorage.getItem("sessionId");
       if (!sessionId) {
@@ -24,6 +25,8 @@
             }
           }               
         }
+      }
+    }
         request.send("type=validateSession&sessionId=" + sessionId);
       };
       
