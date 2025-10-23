@@ -1,5 +1,5 @@
 #!/usr/bin/php
-<?php
+<?php 
 $mydb = new mysqli('127.0.0.1', 'admin', 'AdminPass123!', 'IT_490');
 if ($mydb->connect_errno != 0) {
 	echo $mydb->connect_error . PHP_EOL;
@@ -17,7 +17,6 @@ if ($results->num_rows > 0)
 {
 	while ($row = $results->fetch_assoc())
 	{
-		var_dump($row);
 		$odd = $row['Odds'];
 		$eventId = $row['EventID'];
 		$sportsbook = $row['Sportsbook'];
@@ -26,7 +25,9 @@ if ($results->num_rows > 0)
 		$query = "SELECT * FROM Odds WHERE EventID = $eventId AND Sportsbook = '$sportsbook' AND BetType = '$type' ORDER BY OddID DESC;";
 		$results2 = $mydb->query($query);
 		$results2 = $results2->fetch_assoc();
-		var_dump($results2);
+
+		$newOdd = $results2['Odds'];
+
 		if ($odd[0] === "+")
                 {
                         $oldOddDec = 1 + (float)$odd/100;
@@ -34,11 +35,11 @@ if ($results->num_rows > 0)
                 	$oldOddDec = 1 + 100/abs((float)$odd);
       		}
 
-		if ($results2['Odds'][0] === "+")
+		if ($newOdd[0] === "+")
                 {
-                        $newOddDec = 1 + (float)$odd/100;
-                } elseif ($results2['Odds'] === "-") {
-                	$newOddDec = 1 + 100/abs((float)$odd);
+                        $newOddDec = 1 + (float)$newOdd/100;
+                } elseif ($newOdd[0] === "-") {
+                	$newOddDec = 1 + 100/abs((float)$newOdd);
 		}
 
 		if ($oldOddDec > $newOddDec)
