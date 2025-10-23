@@ -79,6 +79,7 @@
 		   if (odds && odds[rowInfo.keys[0]]) {
 			const val = odds[rowInfo.keys[0]];
 			td.innerHTML = val.odds + (val.value ? `<br>${val.value}` : "");
+
 		   } else {
 			td.textContent = "-";
 		   }
@@ -89,6 +90,7 @@
 	    });
 	}
 }
+
 
 function fmtTime(str) {
       const d = new Date(str.replace(" ", "T"));
@@ -103,7 +105,6 @@ function fmtTime(str) {
   </script>
 </head>
 <body style="display:none;">
-  <!-- main navbar -->
   <nav class="navbar">
     <h2>BetTracker</h2>
     <ul class="nav-links">
@@ -117,7 +118,7 @@ function fmtTime(str) {
     </ul>
   </nav>
 
-  <!-- sportsbooks navbar -->
+
   <div class="subnav">
     <div class="subnav-inner">
       <a href="fanduel.html">FanDuel</a>
@@ -133,7 +134,7 @@ function fmtTime(str) {
 
   <div class="container">
     <div class="card">
-      <h1>View all games here.</h1>
+      <h1>View all NFL games here.</h1>
       <p>List of Games:</p>
     </div>
 
@@ -152,7 +153,6 @@ function fmtTime(str) {
 	  </tr>
 	</thead>
 	<tbody>
-	<!-- game data from API will go heree -->
 	</tbody>
     </table>
   </div>

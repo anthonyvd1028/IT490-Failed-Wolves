@@ -42,7 +42,6 @@
       }
     };
 
-    // format the start time
     function formatTime(str) {
       const d = new Date(str.replace(" ", "T"));
       return d.toLocaleString("en-US", {
@@ -62,11 +61,11 @@
       }
     }
 
-    // array lists to store bets and odd ids
+    // stores bets and odd ids
     let selectedBets = [];
     let selectedOddIds = [];
 
-    // convert odds to decimal format
+    // odds to decimal format
     function convertToDecimalOdds(oddsValue) {
       const num = parseFloat(oddsValue);
       if (isNaN(num)) return 1.0;
@@ -74,7 +73,7 @@
       else return 1 + 100 / Math.abs(num);
     }
 
-    // convert decimal odds back to readable display format
+    // decimal odds to display format
     function convertToDisplayOdds(decimalValue) {
       if (decimalValue >= 2.0) {
         return "+" + Math.round((decimalValue - 1) * 100);
@@ -83,7 +82,6 @@
       }
     }
 
-    // calculate the combined odds
     function calculateCombinedOdds() {
       if (selectedBets.length === 0) return null;
 
@@ -100,7 +98,7 @@
       return combinedDisplayOdds;
     }
 
-    // calculates the potential user payout (if user wins)
+    // calculates potential user payout 
     function calculatePayout(odds, wager) {
 	const numOdds = parseFloat(odds);
 	const amount = parseFloat(wager);
@@ -116,7 +114,6 @@
 	return "$" + total.toFixed(2);
     }
 
-    // toggle the bet selection
     function toggleBetSelection(cell, betInfo) {
       const index = selectedBets.findIndex(
         (b) =>
@@ -126,12 +123,10 @@
       );
 
       if (index > -1) {
-        // unselect
         selectedOddIds.splice(selectedOddIds.indexOf(betInfo.oddId), 1);
         selectedBets.splice(index, 1);
         cell.classList.remove("selected");
       } else {
-        // select
         selectedOddIds.push(betInfo.oddId);
         selectedBets.push(betInfo);
         cell.classList.add("selected");
@@ -188,7 +183,6 @@
       }
     }
 
-    // wager input
     document.addEventListener("input", (event) => {
       if (event.target.id === "wagerInput") {
         updateBetBar();
@@ -235,13 +229,13 @@
       block.appendChild(table);
       mount.appendChild(block);
 
-      // click functionality
       table.querySelectorAll(".bet-cell").forEach((cell) => {
         cell.addEventListener("click", () => {
-          const type = cell.getAttribute("data-type");
-          const team = cell.parentElement.children[0].textContent.trim();
-          const oddId = cell.getAttribute("data-oddid");
-          const oddValue = cell.getAttribute("data-value");
+          
+	   const type = cell.getAttribute("data-type");
+           const team = cell.parentElement.children[0].textContent.trim();
+           const oddId = cell.getAttribute("data-oddid");
+           const oddValue = cell.getAttribute("data-value");
 
           toggleBetSelection(cell, {
             game: `${game.away} @ ${game.home}`,
@@ -255,10 +249,10 @@
       });
     }
   </script>
+
 </head>
 
 <body style="display:none;">
-  <!-- main navbar -->
   <nav class="navbar">
     <h2>BetTracker</h2>
     <ul class="nav-links">
@@ -271,7 +265,6 @@
     </ul>
   </nav>
 
-  <!-- sportsbooks navbar -->
   <div class="subnav">
     <div class="subnav-inner">
       <a href="fanduel.html" class="active">FanDuel</a>
@@ -285,17 +278,15 @@
     </div>
   </div>
 
-  <!-- main content -->
   <div class="container">
     <div class="card">
       <h1>FanDuel</h1>
-      <p>Displaying current NFL odds from FanDuel.</p>
+      <p>Current NFL Game odds from FanDuel.</p>
     </div>
 
     <div id="oddsContainer"></div>
   </div>
 
-  <!-- floating Bet Bar -->
   <div id="betBar">
     <span id="betCount">0</span> bets selected |
     <strong>Combined Odds:</strong> <span id="betOdds">N/A</span> |

@@ -111,6 +111,7 @@ body {
   flex-wrap: wrap;
 }
 
+
 .subnav a {
   color: var(--thistle);
   text-decoration: none;
@@ -120,7 +121,6 @@ body {
   border: 1px solid transparent;
   transition: transform .2s ease, color .2s ease, border-color .2s ease, background .2s ease;
 }
-
 .subnav a:hover {
   color: var(--columbia);
   transform: translateY(-1px);
@@ -253,11 +253,11 @@ body {
   cursor: pointer;
   transition: background 0.2s ease, transform 0.2s ease;
 }
-
 #betBar button:hover {
   background: #7a596a;
   transform: translateY(-1px);
 }
+
 
 .differentOdds {
   width: 100%;
