@@ -138,7 +138,7 @@
         sentBet.setRequestHeader("Content-Type", "application/jdon");
         sentBet.onreadystatechange = function () {
         	if (this.readyState == 4 && this.status == 200) {
-			console.log("test");
+			alert(JSON.parse(this.responseText).message);
 		}	
 	};
 	let token = sessionStorage.getItem("sessionId");
