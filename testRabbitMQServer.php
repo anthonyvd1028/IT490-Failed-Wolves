@@ -464,6 +464,67 @@ function sendBet($bet){
     return array('message' => 'Bet Placed');
 }
 
+function getWatchlist($request)
+{
+   	$mydb = new mysqli('127.0.0.1' , 'admin' , 'AdminPass123!' , 'IT_490');
+   	if ($mydb->connect_errno != 0) {
+        	echo "Failed to connect to database: " . $mydb->connect_error . PHP_EOL;
+        	exit(0);
+    	}	
+   	echo "Succesfully connected to database".PHP_EOL;
+
+	$sessionId = $request['sessionId'];
+
+	$query = "SELECT * FROM users LEFT JOIN sessions ON users.username = sessions.username WHERE sessions.session_token = '$sessionId';";
+   	$results = $mydb->query($query);
+   	$results = $results->fetch_assoc();
+
+	$ID = $results['id'];
+	$watchlist = [];
+
+	$query = "SELECT * FROM Watchlist LEFT JOIN Odds ON Odds.OddID = Watchlist.OddID LEFT JOIN Events ON Events.EventID = Odds.EventID WHERE Watchlist.UserID = $ID AND Events.StartsAt > NOW();";
+	$results = $mydb->query($query);
+
+	if ($results->num_rows > 0)
+	{
+		while ($row = $results->fetch_assoc())
+		{
+			$home = $row['HomeTeam'];		
+			$away = $row['AwayTeam'];		
+			$type = $row['BetType'];		
+			$value = $row['Value'];		
+			$start = $row['StartsAt'];		
+			$sportsbook = $row['Sportsbook'];
+			$odds = $row['Odds'];
+				
+			switch ($type) {
+				case "Over":
+					$event = "Over " . $value;
+					break;
+				case "Under":
+					$event = "Under " . $value;
+					break;
+				case "AwayML":
+					$event = $away . " ML";
+					break;
+				case "HomeML":
+					$event = $home . " ML";
+					break;
+				case "HomeSpread":
+					$event = $home . " " . $value;
+					break;
+				case "AwaySpread":
+					$event = $away . " " . $value;
+					break;
+			}
+
+			$watchlist[] = array('odds' => $odds, 'sportsbook' => $sportsbook, 'startTime' => $start, 'event' => $away . " @ " . $home, 'watching' => $event);		
+		}		
+	}
+
+	return array('watchlist' => $watchlist);
+}
+
 function insertWatchlist($request)
 {
    $mydb = new mysqli('127.0.0.1' , 'admin' , 'AdminPass123!' , 'IT_490');
@@ -472,19 +533,21 @@ function insertWatchlist($request)
         exit(0);
     }
    echo "Succesfully connected to database".PHP_EOL;
-   $query = "SELECT * FROM users LEFT JOIN sessions ON user.username = sessions.username WHERE sessions.session_token = '$sessionId';";
+
+   $sessionId = $request['sessionId'];
+   $oddId = $request['oddId'];
+
+   $query = "SELECT * FROM users LEFT JOIN sessions ON users.username = sessions.username WHERE sessions.session_token = '$sessionId';";
    $results = $mydb->query($query);
    $results = $results->fetch_assoc();
 
-   $userId = $response['ID'];
-   $eventId = $request['eventId'];
-   $oddId = $request['oddId'];
-   $sessionId = $request['sessionId'];
+   $userId = $results['id'];
 
-   $query = "INSERT INTO watchlist (UserID, EventID, OddID) VALUES ($userId, $eventId, $oddId);";
+   $query = "INSERT INTO Watchlist (UserID, OddID) VALUES ('$userId', '$oddId');";
    $response = $mydb->query($query);
    if ($mydb->errno != 0) {
        echo "failed to execute query:" . PHP_EOL;
+       return array('message' => 'Failed to add watchlist');
        exit(0);
     }
 
@@ -581,6 +644,8 @@ function requestProcessor($request)
 	  return sendBet($request);
     case "insertWatchlist":
          return insertWatchlist($request);
+    case "getWatchlist":
+	 return getWatchlist($request);
     case "getPortfolio":
 	  return getPortfolio($request['sessionId']);
   }

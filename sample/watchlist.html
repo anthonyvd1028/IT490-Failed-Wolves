@@ -25,8 +25,20 @@
           }               
         }
         request.send("type=validateSession&sessionId=" + sessionId);
+      
+	var watchlist = new XMLHttpRequest();
+        watchlist.open("POST","message.php",true);
+        watchlist.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+        watchlist.onreadystatechange = function () { 
+          if (this.readyState == 4 && this.status == 200) {
+            	const watch = JSON.parse(this.responseText);
+		console.log(watch);
+            }
+          }               
+        }
+        watchlist.send("type=getWatchlist&sessionId=" + sessionId);
       }
-    }
+    
   </script>
 
 </head>
