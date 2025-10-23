@@ -81,7 +81,6 @@ case "insertWatchlist":
 	$rabbitRequest = array();
 	$rabbitRequest['type'] = "insertWatchlist";
 	$rabbitRequest['sessionId'] = $request['sessionId'];
-	$rabbitRequest['eventId'] = $request['eventId'];
 	$rabbitRequest['oddId'] = $request['oddId'];
 	$response = $client->send_request($rabbitRequest);
 	echo json_encode(array('message' => $response['message']));
