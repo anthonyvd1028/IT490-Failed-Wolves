@@ -3,9 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>All Games</title>
+  <title>BetTracker | All Games</title>
   <link rel="stylesheet" href="style.css">
   <script>
+
     window.onload = function () {
       let sessionId = sessionStorage.getItem("sessionId");
       if (!sessionId) {
@@ -24,6 +25,7 @@
             }
           }               
         }
+      }
         request.send("type=validateSession&sessionId=" + sessionId);
       };
       
@@ -38,24 +40,24 @@
 	      renderTable(results);
             }
 	};
-	games.send("type=getOddsAllSportsbooks");
+	games.send("type=getOdds");
 
       }
       
       function renderTable(data) {
+	const tableBody = document.querySelector("#gameTable tbody");
+	tableBody.innerHTML = "";
 	const events = data.data.events;
 	for (const key in events) {
 	   const game = events[key];
-
 	   const headerRow = document.createElement("tr");
 	   const cellHeader = document.createElement("td");
 	   cellHeader.colSpan = 9;
 	   cellHeader.className = "game-header";
-	   cellHeader.textContent = `${game.away} @ ${game.home} - ${formatTime(game.startsAt)}`;
+	   cellHeader.textContent = `${game.away} @ ${game.home} - ${fmtTime(game.startsAt)}`;
 	   headerRow.appendChild(cellHeader);
 	   tableBody.appendChild(headerRow);
 	   
-
 	   const oddRows = [
 		{ label: "Away ML", keys: ["awayML"] },
 		{ label: "Home ML", keys: ["homeML"] },
@@ -67,14 +69,13 @@
 
 	   oddRows.forEach((rowInfo) => {
 		const tr = document.createElement("tr");
-		
 		const rowHeader = document.createElement("th");
 		rowHeader.textContent = rowInfo.label;
 		tr.appendChild(rowHeader);
 
 		const sportsbook = ["fanduel", "draftkings", "betmgm", "caesars", "espnbet", "bovada", "unibet", "pointsbet"];
 		sportsbook.forEach((book) => {  
-		   const td = document,createElement("td");
+		   const td = document.createElement("td");
 		   const odds = game.odds[book];
 		   if (odds && odds[rowInfo.keys[0]]) {
 			const val = odds[rowInfo.keys[0]];
@@ -90,8 +91,6 @@
 	    });
 	}
 }
-
-
 function fmtTime(str) {
       const d = new Date(str.replace(" ", "T"));
       return d.toLocaleString("en-US", {

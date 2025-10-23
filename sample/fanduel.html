@@ -27,7 +27,6 @@
         };
         request.send("type=validateSession&sessionId=" + sessionId);
 
-        // get the odds for FanDuel
         var games = new XMLHttpRequest();
         games.open("POST", "message.php", true);
         games.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
@@ -61,11 +60,9 @@
       }
     }
 
-    // stores bets and odd ids
     let selectedBets = [];
     let selectedOddIds = [];
 
-    // odds to decimal format
     function convertToDecimalOdds(oddsValue) {
       const num = parseFloat(oddsValue);
       if (isNaN(num)) return 1.0;
@@ -73,7 +70,6 @@
       else return 1 + 100 / Math.abs(num);
     }
 
-    // decimal odds to display format
     function convertToDisplayOdds(decimalValue) {
       if (decimalValue >= 2.0) {
         return "+" + Math.round((decimalValue - 1) * 100);
@@ -97,8 +93,7 @@
 
       return combinedDisplayOdds;
     }
-
-    // calculates potential user payout 
+ 
     function calculatePayout(odds, wager) {
 	const numOdds = parseFloat(odds);
 	const amount = parseFloat(wager);

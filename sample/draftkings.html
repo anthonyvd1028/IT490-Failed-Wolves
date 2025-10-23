@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,62 +5,265 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BetTracker - DraftKings</title>
   <link rel="stylesheet" href="style.css">
+
   <script>
     window.onload = function () {
       let sessionId = sessionStorage.getItem("sessionId");
       if (!sessionId) {
         window.location.href = "http://www.sample.com/login.html";
       } else {
+        // Validate session
         var request = new XMLHttpRequest();
-        request.open("POST","message.php",true);
-        request.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
-        request.onreadystatechange = function () { 
+        request.open("POST", "message.php", true);
+        request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        request.onreadystatechange = function () {
           if (this.readyState == 4 && this.status == 200) {
             if (JSON.parse(this.responseText).valid) {
               document.body.style.display = "block";
             } else {
               window.location.href = "http://www.sample.com/login.html";
             }
-          }               
-        }
+          }
+        };
         request.send("type=validateSession&sessionId=" + sessionId);
-        
-	var games = new XMLHttpRequest();
-        games.open("POST","message.php",true);
-        games.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
-        games.onreadystatechange = function () { 
+
+        var games = new XMLHttpRequest();
+        games.open("POST", "message.php", true);
+        games.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        games.onreadystatechange = function () {
           if (this.readyState == 4 && this.status == 200) {
-			const results = JSON.parse(this.responseText);
-			console.log(results);
-	  	}               
-        }
+            const results = JSON.parse(this.responseText);
+            console.log(results); 
+            renderOddsTables(results);
+          }
+        };
         games.send("type=getOddsSportsbook&sportsbook=draftkings");
-      
+      }
+    };
+
+    function formatTime(str) {
+      const d = new Date(str.replace(" ", "T"));
+      return d.toLocaleString("en-US", {
+        weekday: "short",
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true
+      });
+    }
+
+    function renderOddsTables(data) {
+      const container = document.getElementById("oddsContainer");
+      const events = data.data.events;
+      for (const key in events) {
+        const game = events[key];
+        renderOneGame(game, container);
       }
     }
+
+    let selectedBets = [];
+    let selectedOddIds = [];
+
+    function convertToDecimalOdds(oddsValue) {
+      const num = parseFloat(oddsValue);
+      if (isNaN(num)) return 1.0;
+      if (num > 0) return 1 + num / 100;
+      else return 1 + 100 / Math.abs(num);
+    }
+
+    function convertToDisplayOdds(decimalValue) {
+      if (decimalValue >= 2.0) {
+        return "+" + Math.round((decimalValue - 1) * 100);
+      } else {
+        return "-" + Math.round(100 / (decimalValue - 1));
+      }
+    }
+
+    function calculateCombinedOdds() {
+      if (selectedBets.length === 0) return null;
+
+      let totalDecimal = 1;
+      selectedBets.forEach((bet) => {
+        const odds = parseFloat(bet.oddValue);
+        totalDecimal *= convertToDecimalOdds(odds);
+      });
+
+      const combinedDisplayOdds = totalDecimal >= 2.0
+	? Math.round((totalDecimal -1) * 100)
+	: -Math.round(100 / (totalDecimal - 1));
+
+      return combinedDisplayOdds;
+    }
+ 
+    function calculatePayout(odds, wager) {
+	const numOdds = parseFloat(odds);
+	const amount = parseFloat(wager);
+	if (isNaN(numOdds) || isNaN(amount)) return "N/A";
+
+	let winnings;
+	    if (numOdds > 0) {
+		winnings = (numOdds / 100) * amount;
+	   } else {
+	     winnings = (100 / Math.abs(numOdds)) * amount;
+	   }
+	const total = amount + winnings;
+	return "$" + total.toFixed(2);
+    }
+
+    function toggleBetSelection(cell, betInfo) {
+      const index = selectedBets.findIndex(
+        (b) =>
+          b.oddId === betInfo.oddId &&
+          b.team === betInfo.team &&
+          b.type === betInfo.type
+      );
+
+      if (index > -1) {
+        selectedOddIds.splice(selectedOddIds.indexOf(betInfo.oddId), 1);
+        selectedBets.splice(index, 1);
+        cell.classList.remove("selected");
+      } else {
+        selectedOddIds.push(betInfo.oddId);
+        selectedBets.push(betInfo);
+        cell.classList.add("selected");
+      }
+
+      updateBetBar();
+      console.log("Selected Bets:", selectedBets);
+      console.log("Selected Odd IDs:", selectedOddIds);
+    }
+
+    window.sendBet = function() {
+        var sentBet = new XMLHttpRequest();
+        sentBet.open("POST", "message.php", true);
+        sentBet.setRequestHeader("Content-Type", "application/jdon");
+        sentBet.onreadystatechange = function () {
+        	if (this.readyState == 4 && this.status == 200) {
+			console.log("test");
+		}	
+	};
+	let token = sessionStorage.getItem("sessionId");
+	const bet = {
+		type: "sendBet",
+		sessionId: token,
+		wager: wagerInput.value,
+		bet: selectedOddIds
+	};
+        sentBet.send(JSON.stringify(bet));
+    }
+
+    function updateBetBar() {
+      const betBar = document.getElementById("betBar");
+      const betCount = document.getElementById("betCount");
+      const betOdds = document.getElementById("betOdds");
+      const wagerInput = document.getElementById("wagerInput");
+      const payoutDisplay = document.getElementById("potentialPayout");
+
+      if (selectedBets.length > 0) {
+        betBar.style.bottom = "0";
+        betCount.textContent = selectedBets.length;
+	const combinedOdds = calculateCombinedOdds();
+	betOdds.textContent = combinedOdds > 0 ? `+${combinedOdds}` : combinedOdds;
+	
+	const wager = wagerInput.value;
+	if (wager && combinedOdds !== "N/A") {
+	  payoutDisplay.textContent = calculatePayout(combinedOdds, wager);
+	} else {
+	  payoutDisplay.textContent = "N/A";
+	}
+
+      } else {
+        betBar.style.bottom = "-80px";
+        betOdds.textContent = "N/A";
+	payoutDisplay.textContent = "N/A";
+      }
+    }
+
+    document.addEventListener("input", (event) => {
+      if (event.target.id === "wagerInput") {
+        updateBetBar();
+      }
+    });
+
+    function renderOneGame(game, mount) {
+      const block = document.createElement("div");
+      block.className = "odds-block";
+
+      const match = document.createElement("div");
+      match.textContent = `${game.away} @ ${game.home}`;
+      const time = document.createElement("div");
+      time.textContent = `Start Time: ${formatTime(game.startsAt)}`;
+      block.appendChild(match);
+      block.appendChild(time);
+
+      const table = document.createElement("table");
+      table.className = "odds-table";
+      table.innerHTML = `
+        <thead>
+          <tr>
+            <th>Team</th>
+            <th>ML</th>
+            <th>Spread</th>
+            <th>O/U</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>${game.home}</strong></td>
+            <td class="bet-cell" data-type="ML" data-oddid="${game.odds.draftkings.homeML.oddId}" data-value="${game.odds.draftkings.homeML.odds}">${game.odds.draftkings.homeML.odds}</td>
+            <td class="bet-cell" data-type="Spread" data-oddid="${game.odds.draftkings.homeSpread.oddId}" data-value="${game.odds.draftkings.homeSpread.odds}">${game.odds.draftkings.homeSpread.odds}<br>${game.odds.draftkings.homeSpread.value}</td>
+            <td class="bet-cell" data-type="O/U" data-oddid="${game.odds.draftkings.over.oddId}" data-value="${game.odds.draftkings.over.odds}">${game.odds.draftkings.over.odds}<br>O ${game.odds.draftkings.over.value}</td>
+          </tr>
+          <tr>
+            <td><strong>${game.away}</strong></td>
+            <td class="bet-cell" data-type="ML" data-oddid="${game.odds.draftkings.awayML.oddId}" data-value="${game.odds.draftkings.awayML.odds}">${game.odds.draftkings.awayML.odds}</td>
+            <td class="bet-cell" data-type="Spread" data-oddid="${game.odds.draftkings.awaySpread.oddId}" data-value="${game.odds.draftkings.awaySpread.odds}">${game.odds.draftkings.awaySpread.odds}<br>${game.odds.draftkings.awaySpread.value}</td>
+            <td class="bet-cell" data-type="O/U" data-oddid="${game.odds.draftkings.under.oddId}" data-value="${game.odds.draftkings.under.odds}">${game.odds.draftkings.under.odds}<br>U ${game.odds.draftkings.under.value}</td>
+          </tr>
+        </tbody>
+      `;
+      block.appendChild(table);
+      mount.appendChild(block);
+
+      table.querySelectorAll(".bet-cell").forEach((cell) => {
+        cell.addEventListener("click", () => {
+          
+	   const type = cell.getAttribute("data-type");
+           const team = cell.parentElement.children[0].textContent.trim();
+           const oddId = cell.getAttribute("data-oddid");
+           const oddValue = cell.getAttribute("data-value");
+
+          toggleBetSelection(cell, {
+            game: `${game.away} @ ${game.home}`,
+            team,
+            type,
+            oddId,
+            oddValue,
+            displayText: cell.innerText.trim(),
+          });
+        });
+      });
+    }
   </script>
+
 </head>
+
 <body style="display:none;">
-  <!-- main navbar -->
   <nav class="navbar">
     <h2>BetTracker</h2>
     <ul class="nav-links">
       <li><a href="index.html">Home</a></li>
       <li><a href="login.html">Login</a></li>
       <li><a href="registration.html">Register</a></li>
-      <li>
-        <a href="portfolio.html" title="My Account">
-          <span style="font-size: 1.3rem;">👤</span>
+      <li><a href="portfolio.html">My Account</a></li>
         </a>
       </li>
     </ul>
   </nav>
 
-  <!-- sportsbooks navbar -->
   <div class="subnav">
     <div class="subnav-inner">
       <a href="fanduel.html">FanDuel</a>
-      <a href="draftkings.html" class="active">Draft Kings</a>
+      <a href="draftkings.html"class="active">Draft Kings</a>
       <a href="betmgm.html">BetMGM</a>
       <a href="caesars.html">Caesars</a>
       <a href="espnbet.html">ESPN BET</a>
@@ -71,14 +273,25 @@
     </div>
   </div>
 
-  <!-- main content -->
   <div class="container">
     <div class="card">
       <h1>DraftKings</h1>
-      <p>Displaying current NFL odds from DraftKings.</p>
+      <p>Current NFL Game odds from DraftKings.</p>
     </div>
+
+    <div id="oddsContainer"></div>
+  </div>
+
+  <div id="betBar">
+    <span id="betCount">0</span> bets selected |
+    <strong>Combined Odds:</strong> <span id="betOdds">N/A</span> |
+    <label for="wagerInput">Wager:</label>
+    <input type="number" id="wagerInput" placeholder="$" min="1" step="1">
+    <strong>Potential Payout:</strong> <span id="potentialPayout">N/A</span>
+    <button id="placeBetBtn" onclick="sendBet()">Place Bet</button>
   </div>
 </body>
 </html>
+
 
 
