@@ -476,13 +476,13 @@ function insertWatchlist($request)
    $sessionId = $request['sessionId'];
    $oddId = $request['oddId'];
 
-   $query = "SELECT * FROM users LEFT JOIN sessions ON user.username = sessions.username WHERE sessions.session_token = '$sessionId';";
+   $query = "SELECT * FROM users LEFT JOIN sessions ON users.username = sessions.username WHERE sessions.session_token = '$sessionId';";
    $results = $mydb->query($query);
    $results = $results->fetch_assoc();
 
-   $userId = $results['ID'];
+   $userId = $results['id'];
 
-   $query = "INSERT INTO watchlist (UserID, OddID) VALUES ('$userId', '$oddId');";
+   $query = "INSERT INTO Watchlist (UserID, OddID) VALUES ('$userId', '$oddId');";
    $response = $mydb->query($query);
    if ($mydb->errno != 0) {
        echo "failed to execute query:" . PHP_EOL;
