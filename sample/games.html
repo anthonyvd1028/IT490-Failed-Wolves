@@ -55,6 +55,17 @@
 	   cellHeader.colSpan = 9;
 	   cellHeader.className = "game-header";
 	   cellHeader.textContent = `${game.away} @ ${game.home} - ${fmtTime(game.startsAt)}`;
+
+           const cellButton = document.createElement("td");
+	   const saveButton = document.createElement("button");
+	
+           saveButton.className = "watchlistButton";
+	   saveButton.textContent = "Add to Watchlist";
+	   saveButton.onclick = function () {
+		   buttonHandle(game);
+	   };
+           cellButton.appendChild(saveButton);
+           headerRow.appendChild(cellButton);
 	   headerRow.appendChild(cellHeader);
 	   tableBody.appendChild(headerRow);
 	   
@@ -86,11 +97,11 @@
 		   }
 		   tr.appendChild(td);
 		});
-
 		tableBody.appendChild(tr);
 	    });
 	}
 }
+
 function fmtTime(str) {
       const d = new Date(str.replace(" ", "T"));
       return d.toLocaleString("en-US", {
@@ -100,6 +111,23 @@ function fmtTime(str) {
 	  hour12: true
       });
   }
+
+function buttonHandle(button) {
+      const sessionId = sessionStorage.getItem("sessionId");
+      const req = new XMLHttpRequest();
+      req.open("POST", "message.php", true);
+      req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+	const parameters = `type=buttonHandle&sessionId=${encodeURIComponent(sessionId)}&home=${encodeURIComponent(game.home)}away=${encodeURIComponent(game.away)}&startsAt=${encodeURIComponentgame.startsAt)}`;
+	req.onreadystatechange = function () {
+		if (this.readyState == 4 && this.status == 200) {
+			const response = JSON.parse(this.responseText);
+			console.log(response);
+			alert("Game added to watchlist.")
+		}
+	};
+	req.send(parameters)
+  }
+
 
   </script>
 </head>
