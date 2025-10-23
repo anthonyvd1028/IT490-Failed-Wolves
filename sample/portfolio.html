@@ -13,7 +13,7 @@
 		document.getElementById("created").innerHTML = "<strong>Account Created On:</strong> " + port.stats.created;	  
 		const tbody = document.getElementById("betHistory").querySelector("tbody");
 		port.stats.betHistory.forEach(bet => {
-			tbody.innerHTML += `<tr><td>${bet.betId}</td><td>${bet.status}</td></tr>`
+			tbody.innerHTML += `<tr><td>${bet.betId}</td><td>$${bet.wager}</td><td>${bet.description}</td><td>${bet.status}</td></tr>`
 		});
 	}
 
@@ -78,6 +78,8 @@
 		<thead>
 			<tr>
 				<th>Bet ID</th>
+				<th>Wager</th>
+				<th>Legs</th>
 				<th>Status</th>
 			</tr>
 		</thead>

@@ -4,8 +4,8 @@
   --raisin: #1A1423;
   --violet: #3D314A;
   --eggplant: #684756;
-  --columbia: #C9DAEA;
-  --thistle: #D7BCC8;
+  --blue: #C9DAEA;
+  --lightpurple: #D7BCC8;
   --text: #F7F8FC;
 }
 
@@ -36,7 +36,7 @@ body {
 
 .navbar h2 {
   margin: 0;
-  color: var(--columbia);
+  color: var(--blue);
   font-weight: 600;
   letter-spacing: 0.5px;
 }
@@ -50,14 +50,14 @@ body {
 }
 
 .nav-links a {
-  color: var(--thistle);
+  color: var(--lightpurple);
   text-decoration: none;
   font-weight: 600;
   transition: color 0.25s ease, transform 0.25s ease;
 }
 
 .nav-links a:hover {
-  color: var(--columbia);
+  color: var(--blue);
   transform: translateY(-1px);
 }
 
@@ -90,7 +90,7 @@ body {
 }
 
 .container h1 {
-  color: var(--columbia);
+  color: var(--blue);
   margin-bottom: 1.5rem;
   font-size: 1.8rem;
   font-weight: 600;
@@ -111,8 +111,9 @@ body {
   flex-wrap: wrap;
 }
 
+
 .subnav a {
-  color: var(--thistle);
+  color: var(--lightpurple);
   text-decoration: none;
   font-weight: 600;
   padding: .4rem .7rem;
@@ -120,16 +121,15 @@ body {
   border: 1px solid transparent;
   transition: transform .2s ease, color .2s ease, border-color .2s ease, background .2s ease;
 }
-
 .subnav a:hover {
-  color: var(--columbia);
+  color: var(--blue);
   transform: translateY(-1px);
   border-color: rgba(201,218,234,.25);
   background: rgba(201,218,234,.06);
 }
 
 .subnav a.active {
-  color: var(--columbia);
+  color: var(--blue);
   border-color: rgba(201,218,234,.35);
   background: rgba(201,218,234,.10);
 }
@@ -164,7 +164,7 @@ body {
 
 .odds-block div:first-child {
   text-align: left;
-  color: var(--columbia);
+  color: var(--blue);
   font-weight: 600;
   margin-bottom: 0.25rem;
   font-size: 1.05rem;
@@ -173,7 +173,7 @@ body {
 .odds-block div:nth-child(2) {
   text-align: left;
   font-size: 0.9rem;
-  color: var(--thistle);
+  color: var(--lightpurple);
   margin-bottom: 0.7rem;
 }
 
@@ -201,7 +201,7 @@ body {
 }
 
 .odds-table thead th {
-  color: var(--columbia);
+  color: var(--blue);
   font-weight: 700;
   font-size: 1rem;
   border-bottom: 1px solid rgba(201,218,234,.25);
@@ -222,7 +222,7 @@ body {
 
 .bet-cell.selected {
   background: rgba(201,218,234,0.25);
-  color: var(--columbia);
+  color: var(--blue);
   font-weight: 700;
   transform: scale(1.05);
 }
@@ -253,11 +253,11 @@ body {
   cursor: pointer;
   transition: background 0.2s ease, transform 0.2s ease;
 }
-
 #betBar button:hover {
   background: #7a596a;
   transform: translateY(-1px);
 }
+
 
 .differentOdds {
   width: 100%;
@@ -276,7 +276,7 @@ body {
 .differentOdds th {
   background: rgba(61, 49, 74, 0.85);
   padding: 0.80rem;
-  color: var(--columbia);
+  color: var(--blue);
   font-weight: 550;
   border-bottom: 1px solid rgba(201, 218, 234, 0.15);
 }
@@ -291,7 +291,7 @@ body {
 }
 
 .differentOdds small {
-  color: var(--thistle);
+  color: var(--lightpurple);
   font-size: 0.8rem;
 }
 
