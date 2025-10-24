@@ -6,7 +6,21 @@
   <title>BetTracker | All Games</title>
   <link rel="stylesheet" href="style.css">
   <script>
-
+	  function insertWatchlist(button) {
+	  	const cell = button.parentElement;
+		var watchOddId = cell.id;
+		let sessionId = sessionStorage.getItem("sessionId");	
+		const watchlist = new XMLHttpRequest();
+        	watchlist.open("POST", "message.php", true);
+        	watchlist.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        	watchlist.onreadystatechange = function () {
+           	if (this.readyState == 4 && this.status == 200) {
+              		const results = JSON.parse(this.responseText);
+	   		alert(results.message);
+		}
+        	};
+        	watchlist.send("type=insertWatchlist&sessionId="+sessionId+"&oddId="+watchOddId);
+	  }
     window.onload = function () {
       let sessionId = sessionStorage.getItem("sessionId");
       if (!sessionId) {
@@ -89,7 +103,7 @@
 		   const odds = game.odds[book];
 		   if (odds && odds[rowInfo.keys[0]]) {
 			const val = odds[rowInfo.keys[0]];
-				     td.innerHTML = `<button>${val.odds}${val.value ? `<br>${val.value}` : ''}</button>`;
+				     td.innerHTML = `<button onclick="insertWatchlist(this)">${val.odds}${val.value ? `<br>${val.value}` : ''}</button>`;
 			td.id = val.oddId;
 		   } else {
 			td.textContent = "-";
