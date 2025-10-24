@@ -51,15 +51,15 @@ if ($results->num_rows > 0)
 		if ($oldOddDec > $newOddDec)
 		{
 			$subject = "Odds in your watchlist have changed";
-			$message = "The odds for $away @ $home and $type have went down";
+			$message = "The odds for $away @ $home and $type has went down";
 			SendEmail($email, $subject, $message);
 		} elseif ($oldOddDec < $newOddDec) {
 			$subject = "Odds in your watchlist have changed";
-			$message = "The odds for $away @ $home and $type have went up";
+			$message = "The odds for $away @ $home and $type has went up";
 			SendEmail($email, $subject, $message);
 		} else {
 			$subject = "Watchlist Alert";
-			$message = "The odds for $away @ $home and $type have not moved";
+			$message = "The odds for $away @ $home and $type has not moved";
 			SendEmail($email, $subject, $message);
 		}
 	}
