@@ -12,6 +12,7 @@
     }
 
     function SendRegistrationRequest() {
+      var email = encodeURIComponent(document.getElementById("email").value);
       var username = document.getElementById("uname").value;
       var password = document.getElementById("pword").value;
       var password2 = document.getElementById("pword2").value;
@@ -24,36 +25,33 @@
           HandleRegistrationResponse(this.responseText);
         }
       };
-      request.send("type=registration&uname=" + username + "&pword=" + password + "&pword2=" + password2);
+      request.send("type=registration&uname=" + username + "&pword=" + password + "&pword2=" + password2 + "&email=" + email);
     }
   </script>
+
 </head>
 <body>
   <nav class="navbar">
-    <h2>failedwolves.</h2>
+    <h2>BetTracker</h2>
     <ul class="nav-links">
       <li><a href="login.html">Login</a></li>
-      <li><a href="#" class="disabled">Register</a></li>
+      <li><a href="registration.html" class="active">Register</a></li>
     </ul>
   </nav>
 
   <div class="container">
     <div class="card">
       <h1>Register</h1>
-
+      <label for="email">Email:</label>
+      <input type="text" id="email" name="email">
       <label for="uname">Username:</label>
       <input type="text" id="uname" name="uname">
-
       <label for="pword">Password:</label>
       <input type="password" id="pword" name="pword">
-
       <label for="pword2">Confirm Password:</label>
       <input type="password" id="pword2" name="pword2">
-
       <button onclick="SendRegistrationRequest()">Register</button>
-
       <div id="textResponse"></div>
-
     </div>
   </div>
 </body>

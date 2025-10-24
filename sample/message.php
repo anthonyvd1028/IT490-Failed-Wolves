@@ -11,7 +11,13 @@ if (!isset($_POST))
         echo json_encode($msg);
         exit(0);
 }
-$request = $_POST;
+if (!empty($_POST))
+{
+	$request = $_POST;
+} else {
+	$request = json_decode(file_get_contents('php://input'), true);	
+}
+
 $response = "unsupported request type, politely FUCK OFF";
 switch ($request["type"])
 {
@@ -30,7 +36,8 @@ case "registration":
         $rabbitRequest['username'] = $request["uname"];
         $rabbitRequest['password'] = $request["pword"];
         $rabbitRequest['password2'] = $request["pword2"];
-        $response = $client->send_request($rabbitRequest);
+	$rabbitRequest['email'] = $request["email"];       
+	$response = $client->send_request($rabbitRequest);
 	echo json_encode(array('message' => $response["message"]));
 	break;
 
@@ -44,18 +51,47 @@ case "validateSession":
 case "getOdds":
 	$rabbitRequest = array();
 	$rabbitRequest['type'] = "getOdds";
-	$rabbitRequest['sessionId'] = $request["sessionId"];
 	$response = $client->send_request($rabbitRequest);
-	echo json_encode(array('data' => $response["data"]));
+	echo json_encode(array('data' => $response["games"]));
+	break;
 case "getOddsSportsbook":
 	$rabbitRequest = array();
-	$rabbitRequest['type' = "getOddsSportsbook";
-	$rabbitRequest['sessionId'] = $request["sessionId"];
+	$rabbitRequest['type'] = "getOddsSportsbook";
 	$rabbitRequest['sportsbook'] = $request["sportsbook"];
         $response = $client->send_request($rabbitRequest);
-	echo json_encode(array('data' => $response["data"]));
+	echo json_encode(array('data' => $response["games"]));
+	break;
+case "sendBet":
+	$rabbitRequest = array();
+	$rabbitRequest['type'] = "sendBet";
+	$rabbitRequest['sessionId'] = $request["sessionId"];
+	$rabbitRequest['wager'] = $request['wager'];
+	$rabbitRequest['bet'] = $request['bet'];
+	$response = $client->send_request($rabbitRequest);
+	echo json_encode(array('message' => $response['message']));
+	break;
+case "getPortfolio":
+	$rabbitRequest = array();
+	$rabbitRequest['type'] = "getPortfolio";
+	$rabbitRequest['sessionId'] = $request['sessionId'];
+	$response = $client->send_request($rabbitRequest);
+	echo json_encode(array('stats' => $response['stats']));
+	break;
+case "insertWatchlist":
+	$rabbitRequest = array();
+	$rabbitRequest['type'] = "insertWatchlist";
+	$rabbitRequest['sessionId'] = $request['sessionId'];
+	$rabbitRequest['oddId'] = $request['oddId'];
+	$response = $client->send_request($rabbitRequest);
+	echo json_encode(array('message' => $response['message']));
+	break;
+case "getWatchlist":
+	$rabbitRequest = array();
+	$rabbitRequest['type'] = "getWatchlist";
+	$rabbitRequest['sessionId'] = $request['sessionId'];
+	$response = $client->send_request($rabbitRequest);
+	echo json_encode(array('watchlist' => $response['watchlist']));
+	break;
 }
-
 exit(0);
-
 ?> 

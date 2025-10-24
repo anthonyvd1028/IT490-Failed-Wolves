@@ -4,8 +4,8 @@
   --raisin: #1A1423;
   --violet: #3D314A;
   --eggplant: #684756;
-  --columbia: #C9DAEA;
-  --thistle: #D7BCC8;
+  --blue: #C9DAEA;
+  --lightpurple: #D7BCC8;
   --text: #F7F8FC;
 }
 
@@ -24,7 +24,6 @@ body {
               linear-gradient(135deg, var(--raisin) 0%, var(--violet) 60%);
 }
 
-/* NAVBAR */
 .navbar {
   display: flex;
   justify-content: space-between;
@@ -37,7 +36,7 @@ body {
 
 .navbar h2 {
   margin: 0;
-  color: var(--columbia);
+  color: var(--blue);
   font-weight: 600;
   letter-spacing: 0.5px;
 }
@@ -51,22 +50,26 @@ body {
 }
 
 .nav-links a {
-  color: var(--thistle);
+  color: var(--lightpurple);
   text-decoration: none;
   font-weight: 600;
   transition: color 0.25s ease, transform 0.25s ease;
 }
 
 .nav-links a:hover {
-  color: var(--columbia);
+  color: var(--blue);
   transform: translateY(-1px);
 }
 
-.nav-links a.disabled {
-  display: none;
+.nav-links a span {
+  vertical-align: middle;
+  transition: transform 0.25s ease;
 }
 
-/* LAYOUT */
+.nav-links a:hover span {
+  transform: scale(1.1);
+}
+
 .container {
   flex: 1;
   display: flex;
@@ -87,74 +90,219 @@ body {
 }
 
 .container h1 {
-  color: var(--columbia);
+  color: var(--blue);
   margin-bottom: 1.5rem;
   font-size: 1.8rem;
   font-weight: 600;
 }
 
-.container label {
-  display: block;
-  text-align: left;
-  margin: 0.8rem 0 0.3rem;
-  color: var(--thistle);
-  font-size: 0.9rem;
-  font-weight: 500;
+.subnav {
+  background: rgba(61,49,74,0.9);
+  border-bottom: 1px solid rgba(201,218,234,.18);
+  box-shadow: 0 6px 16px rgba(0,0,0,.25) inset;
 }
 
-.container input {
-  width: 100%;
-  max-width: 340px;
-  padding: 0.65rem 0.9rem;
-  border: 1px solid rgba(201,218,234,.25);
-  border-radius: 8px;
-  background-color: #231b2d;
-  color: var(--text);
-  font-size: 0.95rem;
-  transition: all 0.25s ease;
+.subnav-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: .6rem 1rem;
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
 }
 
-.container input:focus {
-  outline: none;
-  border-color: var(--columbia);
-  box-shadow: 0 0 0 3px rgba(201,218,234,.25);
-}
 
-/* BUTTON */
-button {
-  margin-top: 1.25rem;
-  width: 100%;
-  padding: 0.8rem 1.2rem;
-  background-color: var(--eggplant);
-  border: none;
-  border-radius: 10px;
-  color: #fff;
+.subnav a {
+  color: var(--lightpurple);
+  text-decoration: none;
   font-weight: 600;
-  font-size: 1rem;
-  cursor: pointer;
-  box-shadow: 0 8px 18px rgba(104,71,86,.35);
-  transition: background-color 0.25s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  padding: .4rem .7rem;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  transition: transform .2s ease, color .2s ease, border-color .2s ease, background .2s ease;
 }
-
-button:hover {
-  background-color: #7a596a;
+.subnav a:hover {
+  color: var(--blue);
   transform: translateY(-1px);
-  box-shadow: 0 10px 24px rgba(104,71,86,.45);
+  border-color: rgba(201,218,234,.25);
+  background: rgba(201,218,234,.06);
 }
 
-#textResponse {
-  margin-top: 1rem;
+.subnav a.active {
+  color: var(--blue);
+  border-color: rgba(201,218,234,.35);
+  background: rgba(201,218,234,.10);
+}
+
+#oddsContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.8rem;
+  width: 100%;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.odds-block {
+  background: linear-gradient(180deg, rgba(61,49,74,.88), rgba(26,20,35,.88));
+  border: 1px solid rgba(201,218,234,.18);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.35);
+  padding: 1rem 1.25rem;
+  overflow: hidden;
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.odds-block:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 28px rgba(0,0,0,.45);
+}
+
+.odds-block div:first-child {
+  text-align: left;
+  color: var(--blue);
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  font-size: 1.05rem;
+}
+
+.odds-block div:nth-child(2) {
+  text-align: left;
+  font-size: 0.9rem;
+  color: var(--lightpurple);
+  margin-bottom: 0.7rem;
+}
+
+.odds-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.odds-table th,
+.odds-table td {
+  padding: 0.65rem 0.8rem;
+  border-bottom: 1px solid rgba(201,218,234,.12);
+  text-align: center;
+  vertical-align: middle;
+  white-space: nowrap;
   font-size: 0.95rem;
-  color: var(--thistle);
 }
 
-@media (max-width: 480px) {
-  .card {
-    width: 90%;
-    padding: 1.5rem;
-  }
+.odds-table th:first-child,
+.odds-table td:first-child {
+  text-align: left;
+  white-space: normal;
+  width: 40%;
+}
+
+.odds-table thead th {
+  color: var(--blue);
+  font-weight: 700;
+  font-size: 1rem;
+  border-bottom: 1px solid rgba(201,218,234,.25);
+}
+
+.odds-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.bet-cell {
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.bet-cell:hover {
+  background: rgba(201,218,234,0.12);
+}
+
+.bet-cell.selected {
+  background: rgba(201,218,234,0.25);
+  color: var(--blue);
+  font-weight: 700;
+  transform: scale(1.05);
+}
+
+#betBar {
+  position: fixed;
+  bottom: -80px;
+  left: 0;
+  right: 0;
+  background: rgba(61,49,74,0.95);
+  color: var(--text);
+  font-weight: 500;
+  text-align: center;
+  padding: 1rem;
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.4);
+  transition: bottom 0.3s ease;
+  z-index: 1000;
+}
+
+#betBar button {
+  background: var(--eggplant);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.6rem 1.2rem;
+  font-weight: 600;
+  margin-left: 1rem;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+#betBar button:hover {
+  background: #7a596a;
+  transform: translateY(-1px);
 }
 
 
+.differentOdds {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1.5rem;
+  text-align: center;
+  background: rgba(61, 49, 74, 0.5);
+  color: var(--text);
+  border: 1px solid rgba(201, 218, 234, 0.15);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  border-radius: 12px;
+  overflow: hidden;
+  font-size: 0.8rem;
+}
 
+.differentOdds th {
+  background: rgba(61, 49, 74, 0.85);
+  padding: 0.80rem;
+  color: var(--blue);
+  font-weight: 550;
+  border-bottom: 1px solid rgba(201, 218, 234, 0.15);
+}
+
+.differentOdds td {
+  padding: 0.5rem;
+  border-bottom: 1px solid rgba(201, 218, 234, 0.08);
+}
+
+.differentOdds tr:last-child td {
+  border-bottom: none;
+}
+
+.differentOdds small {
+  color: var(--lightpurple);
+  font-size: 0.8rem;
+}
+
+.watchlist {
+	max-width: 1200;
+	margin: 0 auto;
+	padding: 20px;
+}
+
+.watchlistCard {
+width: 30%
+height: auto;
+}
 

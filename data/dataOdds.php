@@ -39,6 +39,8 @@ $weekStart->setTime(0,0,0);
 $weekEnd = new DateTime('tuesday next week', new DateTimeZone('UTC'));
 $weekEnd->setTime(23,59,59);
 
+$rabbit = [];
+
 do {
 	if ($cursor)
 	{
@@ -125,10 +127,14 @@ do {
 			{
 				$return['under'][$bet] = array($value['overUnder'], $value['odds']);
 			}
-			
-			$rabbitResponse = $client->publish(array('type' => 'insertData', 'data' => $return));
+			//var_dump($return);
+			//$rabbitResponse = $client->publish(array('type' => 'insertData', 'data' => $return));
+			//echo $rabbitResponse . PHP_EOL;
+			$rabbit[] = $return;
 		}	
 	}
 	$cursor = $data['nextCursor'] ?? null;
 } while ($cursor);
+var_dump($rabbit);
+$rabbitResponse = $client->publish(array('type' => 'insertData', 'data' => $rabbit));
 ?>

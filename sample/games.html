@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BetTracker | All Games</title>
+  <link rel="stylesheet" href="style.css">
+  <script>
+	  function insertWatchlist(button) {
+	  	const cell = button.parentElement;
+		var watchOddId = cell.id;
+		let sessionId = sessionStorage.getItem("sessionId");	
+		const watchlist = new XMLHttpRequest();
+        	watchlist.open("POST", "message.php", true);
+        	watchlist.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        	watchlist.onreadystatechange = function () {
+           	if (this.readyState == 4 && this.status == 200) {
+              		const results = JSON.parse(this.responseText);
+	   		alert(results.message);
+		}
+        	};
+        	watchlist.send("type=insertWatchlist&sessionId="+sessionId+"&oddId="+watchOddId);
+	  }
+    window.onload = function () {
+      let sessionId = sessionStorage.getItem("sessionId");
+      if (!sessionId) {
+        window.location.href = "http://www.sample.com/login.html";
+      } else {
+        var request = new XMLHttpRequest();
+        request.open("POST","message.php",true);
+        request.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+        request.onreadystatechange = function () { 
+          if (this.readyState == 4 && this.status == 200) {
+            if (JSON.parse(this.responseText).valid) {
+              document.body.style.display = "block";
+	      displayGames();
+            } else {
+              window.location.href = "http://www.sample.com/login.html";
+            }
+          }               
+        }
+      }
+        request.send("type=validateSession&sessionId=" + sessionId);
+      };
+      
+      function displayGames() {
+	const games = new XMLHttpRequest();
+	games.open("POST", "message.php", true);
+	games.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+	games.onreadystatechange = function () {
+	   if (this.readyState == 4 && this.status == 200) {
+	      const results = JSON.parse(this.responseText);
+	      console.log(results);
+	      renderTable(results);
+            }
+	};
+	games.send("type=getOdds");
+
+      }
+      
+      function renderTable(data) {
+	const tableBody = document.querySelector("#gameTable tbody");
+	tableBody.innerHTML = "";
+	const events = data.data.events;
+	for (const key in events) {
+	   const game = events[key];
+	   const headerRow = document.createElement("tr");
+	   const cellHeader = document.createElement("td");
+	   cellHeader.colSpan = 9;
+	   cellHeader.className = "game-header";
+	   cellHeader.textContent = `${game.away} @ ${game.home} - ${fmtTime(game.startsAt)}`;
+
+           const cellButton = document.createElement("td");
+	   const saveButton = document.createElement("button");
+	
+           saveButton.className = "watchlistButton";
+	   saveButton.onclick = function () {
+		   buttonHandle(game);
+	   };
+           cellButton.appendChild(saveButton);
+           headerRow.appendChild(cellButton);
+	   headerRow.appendChild(cellHeader);
+	   tableBody.appendChild(headerRow);
+	   
+	   const oddRows = [
+		{ label: "Away ML", keys: ["awayML"] },
+		{ label: "Home ML", keys: ["homeML"] },
+		{ label: "Home Spread", keys: ["homeSpread"] },
+		{ label: "Away Spread", keys: ["awaySpread"] },
+		{ label: "Over", keys: ["over"] },
+		{ label: "Under", keys: ["under"] }
+	   ];
+
+	   oddRows.forEach((rowInfo) => {
+		const tr = document.createElement("tr");
+		const rowHeader = document.createElement("th");
+		rowHeader.textContent = rowInfo.label;
+		tr.appendChild(rowHeader);
+
+		const sportsbook = ["fanduel", "draftkings", "betmgm", "caesars", "espnbet", "bovada", "unibet", "pointsbet"];
+		sportsbook.forEach((book) => {  
+		   const td = document.createElement("td");
+		   const odds = game.odds[book];
+		   if (odds && odds[rowInfo.keys[0]]) {
+			const val = odds[rowInfo.keys[0]];
+				     td.innerHTML = `<button onclick="insertWatchlist(this)">${val.odds}${val.value ? `<br>${val.value}` : ''}</button>`;
+			td.id = val.oddId;
+		   } else {
+			td.textContent = "-";
+		   }
+		   tr.appendChild(td);
+		});
+		tableBody.appendChild(tr);
+	    });
+	}
+}
+
+function fmtTime(str) {
+      const d = new Date(str.replace(" ", "T"));
+      return d.toLocaleString("en-US", {
+	  weekday: "short",
+	  hour: "numeric",
+	  minute: "2-digit",
+	  hour12: true
+      });
+  }
+
+function buttonHandle(button) {
+      const sessionId = sessionStorage.getItem("sessionId");
+      const req = new XMLHttpRequest();
+      req.open("POST", "message.php", true);
+      req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+      const params = `type=buttonHandle&sessionId=${encodeURIComponent(sessionId)}&home=${encodeURIComponent(game.home)}&away=${encodeURIComponent(game.away)}&startsAt=${encodeURIComponent(game.startsAt)}`;
+      req.onreadystatechange = function () {
+		if (this.readyState == 4 && this.status == 200) {
+			const response = JSON.parse(this.responseText);
+			console.log(response);
+			alert("Game added to watchlist.");
+		}
+	};
+      req.send(params);
+  }
+
+
+  </script>
+</head>
+<body style="display:none;">
+  <nav class="navbar">
+    <h2>BetTracker</h2>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="games.html" class="active">View Games</a></li>
+      <li><a href="login.html">Login</a></li>
+      <li><a href="registration.html">Register</a></li>
+      <li><a href="portfolio.html">My Account</a></li>
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+
+  <div class="subnav">
+    <div class="subnav-inner">
+      <a href="fanduel.html">FanDuel</a>
+      <a href="draftkings.html">Draft Kings</a>
+      <a href="betmgm.html">BetMGM</a>
+      <a href="caesars.html">Caesars</a>
+      <a href="espnbet.html">ESPN BET</a>
+      <a href="bovada.html">Bovada</a>
+      <a href="unibet.html">Unibet</a>
+      <a href="pointsbet.html">PointsBet</a>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="card">
+      <h1>View all NFL games here.</h1>
+      <p>Click a button to add bet to watchlist.<p>
+      <p>List of Games:</p>
+    </div>
+
+    <table class="differentOdds" id="gameTable">
+	<thead>
+	  <tr>
+	    <th>Game</th>
+	    <th>FanDuel</th>
+	    <th>DraftKings</th>
+	    <th>BetMGM</th>
+	    <th>Caesars</th>
+	    <th>ESPN BET</th>
+	    <th>Bovada</th>
+	    <th>Unibet</th>
+	    <th>PointsBet</th>
+	  </tr>
+	</thead>
+	<tbody>
+	</tbody>
+    </table>
+  </div>
+</body>
+</html>
+
+
