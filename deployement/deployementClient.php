@@ -63,8 +63,8 @@ $request = array();
 
 switch ($args['-o'][0])
 {
-	case 'push':
-		$request['type'] = "push";
+	case 'pull':
+		$request['type'] = "pull";
 		$path = bundleFiles($args);
 		$request['path'] = $path;
 		break;

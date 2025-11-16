@@ -4,14 +4,12 @@ require_once('path.inc');
 require_once('get_host_info.inc');
 require_once('rabbitMQLib.inc');
 
-function pushChanges($req)
+function pullChanges($req)
 {
 	var_dump($req);
 
 
-
-
-	return array('message' => "Changes have been pushed");
+	return array('message' => "Changes have been pushed", 'request' => $req);
 }
 
 function requestProcessor($request)
@@ -21,8 +19,9 @@ function requestProcessor($request)
     return "ERROR: unsupported message type";
   }
   switch ($request['type']) {
-    case "push":
-        return pushChanges($request);
+    case "pull":
+        return pullChanges($request);
+	break;
   }
   return array('message'=>"No valid type found");
 }
