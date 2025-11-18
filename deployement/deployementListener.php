@@ -4,12 +4,88 @@ require_once('path.inc');
 require_once('get_host_info.inc');
 require_once('rabbitMQLib.inc');
 
+function changeStatus($req)
+{
+	$status = $req['status'];
+	$version = $req['version'];
+	$cluster = $req['cluster'];
+
+	try {
+		$mydb = new mysqli('127.0.0.1' , 'admin' , 'AdminPass123!' , 'IT_490');
+        	if ($mydb->connect_errno != 0) {
+         		echo "Failed to connect to database: " . $mydb->connect_error . PHP_EOL;
+                	exit(0);
+		}
+	
+		if ($version === "Latest")
+		{	
+			$query = "SELECT * FROM $cluster ORDER BY VersionNumber DESC;";
+        		$results = $mydb->query($query);
+			$results = $results->fetch_assoc();
+			if ($mydb->errno != 0) {
+       				return array('message' => "There was an SQL error");
+       				exit(0);
+			}
+			$version = $results['VersionNumber'];
+		} 
+
+		$query = "UPDATE $cluster SET Status = '$status' WHERE VersionNumber = $version;";
+        	$results = $mydb->query($query);
+		if ($mydb->errno != 0) {
+       			return array('message' => "There was an SQL error while changing the status");
+       			exit(0);
+		}
+
+		return array('message' => "Status was changed successfully");
+	} catch (Exception $e) {
+		return array('message' => "There was an SQL error while changing the status");
+	}		
+}
+
 function pullChanges($req)
 {
-	var_dump($req);
+	$path = $req['path'];
+	$user = $req['user'];
+	$ip = $req['ip'];
 
+	try {
+		$mydb = new mysqli('127.0.0.1' , 'admin' , 'AdminPass123!' , 'IT_490');
+        	if ($mydb->connect_errno != 0) {
+         		echo "Failed to connect to database: " . $mydb->connect_error . PHP_EOL;
+                	exit(0);
+		}
+		// TODO: Change Test to DEV
+		$query = "SELECT * FROM Test ORDER BY VersionNumber DESC;";
+        	$results = $mydb->query($query);
+		$results = $results->fetch_assoc();
+		if ($mydb->errno != 0) {
+       			return array('message' => "There was an SQL error");
+       			exit(0);
+		}
+		
+		if (!(isset($results['VersionNumber'])))
+		{
+			$version = 1;
+		} else {
+			$version = $results['VersionNumber'] + 1;
+		}
+		
+		exec("mkdir ~/versions/$version");
+		$pull = "scp $user@$ip:$path ~/versions/$version/";
+		exec($pull);	
 
-	return array('message' => "Changes have been pushed", 'request' => $req);
+		// TODO: Change Test to DEV
+		$query = "INSERT INTO Test (Status, Path) VALUES ('Pending', '~/versions/$version/files.tar.gz');";
+        	$results = $mydb->query($query);
+		if ($mydb->errno != 0) {
+       			return array('message' => "There was an SQL error");
+       			exit(0);
+		}
+
+		return array('message' => "Changes pulled successfully");
+	} catch (Exception $e) {	
+		return array('message' => "There was an error pulling the changes");
+	}	
 }
 
 function requestProcessor($request)
@@ -21,6 +97,9 @@ function requestProcessor($request)
   switch ($request['type']) {
     case "pull":
         return pullChanges($request);
+	break;
+    case "status":
+	return changeStatus($request);
 	break;
   }
   return array('message'=>"No valid type found");
