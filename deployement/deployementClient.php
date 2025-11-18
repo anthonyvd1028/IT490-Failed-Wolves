@@ -22,7 +22,7 @@ function bundleFiles($args)
 		
 	exec("tar -czf files.tar.gz $files");
 
-	return __DIR__ . 'files.tar.gz';
+	return __DIR__ . '/files.tar.gz';
 }
 
 function sortArgs($argc, $argv)
@@ -67,6 +67,14 @@ switch ($args['-o'][0])
 		$request['type'] = "pull";
 		$path = bundleFiles($args);
 		$request['path'] = $path;
+		$request['ip'] = exec("ip a | grep 172 | awk '{print $2}' | cut -d '/' -f1");
+		$request['user'] = exec("whoami");
+		break;
+	case 'status':
+		$request['type'] = "status";
+		$request['cluster'] = $args['-c'][0];
+		$request['version'] = $args['-v'][0];
+		$request['status'] = $args['-s'][0];
 		break;
 }
 
