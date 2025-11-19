@@ -4,6 +4,31 @@ require_once('path.inc');
 require_once('get_host_info.inc');
 require_once('rabbitMQLib.inc');
 
+function pushChanges($req)
+{
+	global $QA;
+	$cluster = $req['cluster'];
+	try {
+		$push = array();
+		$push['type'] = "pull";
+		$push['path'] = "~/.ssh/";
+
+		switch ($req['cluster'])
+		{
+			case 'QA':
+				$QA->publish($push);
+				break;
+			case 'Prod':
+
+				break;
+		}
+
+		return array('message' => "Changes have been pulled by $cluster");	
+	} catch (Exception $e) {
+		return array('message' => "There was an error pushing the changes to $cluster");
+	}	
+}
+
 function changeStatus($req)
 {
 	$status = $req['status'];
@@ -101,11 +126,15 @@ function requestProcessor($request)
     case "status":
 	return changeStatus($request);
 	break;
+    case "push":
+	return pushChanges($request);
+	break;
   }
   return array('message'=>"No valid type found");
 }
 
 $server = new rabbitMQServer("deployement.ini","devdeployement");
+$QA = new rabbitMQClient("deployement.ini","deployementQA");
 
 echo "testRabbitMQServer BEGIN".PHP_EOL;
 $server->process_requests('requestProcessor');

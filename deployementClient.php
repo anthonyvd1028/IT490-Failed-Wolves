@@ -76,6 +76,11 @@ switch ($args['-o'][0])
 		$request['version'] = $args['-v'][0];
 		$request['status'] = $args['-s'][0];
 		break;
+	case 'push':
+		$request['type'] = "push";
+		$request['cluster'] = $args['-c'][0];
+		$request['version'] = $args['-v'][0];
+		break;
 }
 
 $response = $client->send_request($request);
