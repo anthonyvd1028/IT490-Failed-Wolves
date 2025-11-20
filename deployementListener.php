@@ -6,17 +6,56 @@ require_once('rabbitMQLib.inc');
 
 function pushChanges($req)
 {
+	$mydb = new mysqli('127.0.0.1' , 'admin' , 'AdminPass123!' , 'IT_490');
+        if ($mydb->connect_errno != 0) {
+                echo "Failed to connect to database: " . $mydb->connect_error . PHP_EOL;
+        	exit(0);
+ 	}
+
 	global $QA;
 	$cluster = $req['cluster'];
 	try {
 		$push = array();
 		$push['type'] = "pull";
-		$push['path'] = "~/.ssh/";
 		$push['nodes'] = $req['nodes'];
 
 		switch ($req['cluster'])
 		{
 			case 'QA':
+				$query = "SELECT * FROM Dev WHERE Status = 'Good' ORDER BY VersionNumber DESC;";
+        			$results = $mydb->query($query);
+				$results = $results->fetch_assoc();
+				if ($mydb->errno != 0) {
+       					return array('message' => "There was an SQL error");
+       					exit(0);
+				}
+				$path = $results['Path'];
+					
+				$query = "SELECT * FROM QA ORDER BY VersionNumber DESC;";
+                		$results = $mydb->query($query);
+               			$results = $results->fetch_assoc();
+                		if ($mydb->errno != 0) {
+                        		return array('message' => "There was an SQL error");
+                        		exit(0);
+                		}	
+
+                		if (!(isset($results['VersionNumber'])))
+                		{
+                	        	$version = 1;
+                		} else {
+                		        $version = $results['VersionNumber'] + 1;
+		                }
+
+				$newDir = "~/versions/$version/";			
+				$query = "INSERT INTO QA (VersionNumber, Status, Path) VALUES ('$version', 'Pending', '$newDir');";
+                                $results = $mydb->query($query);
+                                if ($mydb->errno != 0) {
+                                        return array('message' => "There was an SQL error");
+                                        exit(0);
+                                }
+
+				$push['path'] = $path;
+				$push['newDir'] = $newDir;
 				$QA->publish($push);
 				break;
 			case 'Prod':
@@ -80,8 +119,8 @@ function pullChanges($req)
          		echo "Failed to connect to database: " . $mydb->connect_error . PHP_EOL;
                 	exit(0);
 		}
-		// TODO: Change Test to DEV
-		$query = "SELECT * FROM Test ORDER BY VersionNumber DESC;";
+		
+		$query = "SELECT * FROM Dev ORDER BY VersionNumber DESC;";
         	$results = $mydb->query($query);
 		$results = $results->fetch_assoc();
 		if ($mydb->errno != 0) {
@@ -100,8 +139,7 @@ function pullChanges($req)
 		$pull = "scp $user@$ip:$path ~/versions/$version/";
 		exec($pull);	
 
-		// TODO: Change Test to DEV
-		$query = "INSERT INTO Test (Status, Path) VALUES ('Pending', '~/versions/$version/files.tar.gz');";
+		$query = "INSERT INTO Dev (Status, Path) VALUES ('Pending', '~/versions/$version/files.tar.gz');";
         	$results = $mydb->query($query);
 		if ($mydb->errno != 0) {
        			return array('message' => "There was an SQL error");
