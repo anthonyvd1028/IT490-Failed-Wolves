@@ -12,6 +12,7 @@ function pushChanges($req)
 		$push = array();
 		$push['type'] = "pull";
 		$push['path'] = "~/.ssh/";
+		$push['nodes'] = $req['nodes'];
 
 		switch ($req['cluster'])
 		{
