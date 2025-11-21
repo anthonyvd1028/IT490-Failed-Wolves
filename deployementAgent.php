@@ -6,9 +6,14 @@ require_once('rabbitMQLib.inc');
 
 function pullChanges($req)
 {
-	var_dump($req);
-
-
+	$newDir = $req['newDir'];
+	$oldDir = $req['oldDir'];
+	$path = $req['path'];
+	exec("cp -r $oldDir $newDir");
+       	$pull = "scp avd8@172.29.169.30:$path $newDir";
+	exec($pull);
+	exec("tar -xzf {$newDir}files.tar.gz -C $newDir");	
+	echo "Copied" . PHP_EOL;
 	return;
 }
 
