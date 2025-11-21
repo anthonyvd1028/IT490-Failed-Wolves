@@ -54,8 +54,18 @@ function pushChanges($req)
                                         exit(0);
                                 }
 
+				$query = "SELECT * FROM QA WHERE Status = 'Good' ORDER BY VersionNumber DESC;";
+                                $results = $mydb->query($query);
+                                $results = $results->fetch_assoc();
+                                if ($mydb->errno != 0) {
+                                        return array('message' => "There was an SQL error");
+                                        exit(0);
+                                }
+				$oldDir = $results['Path'];
+
 				$push['path'] = $path;
 				$push['newDir'] = $newDir;
+				$push['oldDir'] = $oldDir;
 				$QA->publish($push);
 				break;
 			case 'Prod':
