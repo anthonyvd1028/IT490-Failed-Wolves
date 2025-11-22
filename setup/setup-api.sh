@@ -1,9 +1,5 @@
 #!/bin/bash
-if [[ "$PWD" =~ ^(.*\/versions\/[0-9]+\/) ]] 
-then
-	rootDir="${BASH_REMATCH[1]}" 
-fi
-
+rootDir=$1
 cronlist=$(crontab -l | grep -v "/data/")
 crontab - <<EOF
 ${cronlist}

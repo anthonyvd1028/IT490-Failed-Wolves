@@ -14,6 +14,23 @@ function pullChanges($req)
 	exec($pull);
 	exec("tar -xzf {$newDir}files.tar.gz -C $newDir");	
 	echo "Copied" . PHP_EOL;
+
+	$hostname = exec("hostname");
+	$type = explode("-", $hostname)[1];
+	echo "Type: $type" . PHP_EOL;
+	foreach ($req['nodes'] as $node)
+	{
+		if ($node == $type && $node == 'API')
+		{
+			$command = "bash {$newDir}setup/setup-api.sh $newDir";
+			echo $command . PHP_EOL;
+			exec($command);
+			echo "Restarted $node" . PHP_EOL;
+		}
+
+		#TODO: Add if statements for web, db, and agent
+	}
+	
 	return;
 }
 
