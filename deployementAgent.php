@@ -53,7 +53,20 @@ function requestProcessor($request)
   return array('message'=>"No valid type found");
 }
 
-$server = new rabbitMQServer("deployement.ini","deployementQA");
+$hostname = exec("hostname");
+$type = explode("-", $hostname)[1];
+switch ($type)
+{	
+	case 'API':
+		$server = new rabbitMQServer("deployement.ini","deployementQA-API");
+		break;
+	case 'WEB':
+		$server = new rabbitMQServer("deployement.ini","deployementQA-WEB");
+		break;
+	case 'DB':
+		$server = new rabbitMQServer("deployement.ini","deployementQA-DB");
+		break;
+}
 
 echo "testRabbitMQServer BEGIN".PHP_EOL;
 $server->process_requests('requestProcessor');
