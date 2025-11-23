@@ -4,6 +4,25 @@ require_once('path.inc');
 require_once('get_host_info.inc');
 require_once('rabbitMQLib.inc');
 
+function switchDir($req)
+{
+	var_dump($req);
+	$newDir = $req['dir'];
+	$hostname = exec("hostname");
+        $type = explode("-", $hostname)[1];
+
+	switch ($type)
+	{
+		case "API":
+			$command = "bash {$newDir}setup/setup-api.sh $newDir";
+		        echo $command . PHP_EOL;
+        		exec($command);
+        		echo "Restarted $type" . PHP_EOL;
+			break;
+	}
+	return;
+}
+
 function pullChanges($req)
 {
 	$newDir = $req['newDir'];
@@ -48,6 +67,9 @@ function requestProcessor($request)
   switch ($request['type']) {
     case "pull":
         return pullChanges($request);
+	break;
+    case "switch":
+	return switchDir($request);
 	break;
   }
   return array('message'=>"No valid type found");
