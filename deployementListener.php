@@ -4,6 +4,75 @@ require_once('path.inc');
 require_once('get_host_info.inc');
 require_once('rabbitMQLib.inc');
 
+function rollback($req)
+{
+	global $QA;
+        $cluster = $req['cluster'];
+
+        $mydb = new mysqli('127.0.0.1' , 'admin' , 'AdminPass123!' , 'IT_490');
+        if ($mydb->connect_errno != 0) {
+                echo "Failed to connect to database: " . $mydb->connect_error . PHP_EOL;
+                exit(0);
+        }
+
+        $query = "SELECT * FROM $cluster WHERE Status = 'Good' ORDER BY VersionNumber DESC;";
+        $results = $mydb->query($query);
+        $results = $results->fetch_assoc();
+        if ($mydb->errno != 0) {
+                return array('message' => "There was an SQL error");
+                exit(0);
+        }
+
+        $newDir = $results['Path'];
+
+        $push['type'] = "switch";
+        $push['dir'] = $newDir;
+
+        switch ($cluster)
+        {
+                case 'QA':
+                        $QA->publish($push);
+                        break;
+        }
+
+        return array('message' => "Version has been switched");
+}
+
+function switchVersion($req)
+{
+	global $QA;
+	$version = $req['version'];
+	$cluster = $req['cluster'];
+
+	$mydb = new mysqli('127.0.0.1' , 'admin' , 'AdminPass123!' , 'IT_490');
+        if ($mydb->connect_errno != 0) {
+                echo "Failed to connect to database: " . $mydb->connect_error . PHP_EOL;
+                exit(0);
+        }
+
+	$query = "SELECT * FROM $cluster WHERE VersionNumber = $version;";
+	$results = $mydb->query($query);
+	$results = $results->fetch_assoc();
+        if ($mydb->errno != 0) {
+        	return array('message' => "There was an SQL error");
+                exit(0);
+        }
+
+	$newDir = $results['Path'];
+
+	$push['type'] = "switch";
+	$push['dir'] = $newDir;
+
+	switch ($cluster)
+	{
+		case 'QA':
+			$QA->publish($push);	
+			break;
+	}
+
+	return array('message' => "Version has been switched");
+}
+
 function pushChanges($req)
 {
 	$mydb = new mysqli('127.0.0.1' , 'admin' , 'AdminPass123!' , 'IT_490');
@@ -177,6 +246,12 @@ function requestProcessor($request)
 	break;
     case "push":
 	return pushChanges($request);
+	break;
+    case "switch":
+	return switchVersion($request);
+	break;
+    case "rollback":
+	return rollback($request);
 	break;
   }
   return array('message'=>"No valid type found");
