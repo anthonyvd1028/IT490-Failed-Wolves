@@ -26,6 +26,11 @@ function pullChanges($req)
 			echo $command . PHP_EOL;
 			exec($command);
 			echo "Restarted $node" . PHP_EOL;
+		} elseif ($node == $type && $node == 'WEB') {
+			$command = "bash {$newDir}setup/setup-web.sh $newDir";
+			echo $command . PHP_EOL;
+			exec($command);
+			echo "Restarted $node" . PHP_EOL;
 		}
 
 		#TODO: Add if statements for web, db, and agent
