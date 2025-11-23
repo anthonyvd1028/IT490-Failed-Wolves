@@ -183,7 +183,7 @@ function requestProcessor($request)
 }
 
 $server = new rabbitMQServer("deployement.ini","devdeployement");
-$QA = new rabbitMQClient("deployement.ini","deployementQA");
+$QA = new rabbitMQClient("deployement.ini","deployementQA-WEB");
 
 echo "testRabbitMQServer BEGIN".PHP_EOL;
 $server->process_requests('requestProcessor');
