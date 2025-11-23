@@ -82,6 +82,15 @@ switch ($args['-o'][0])
 		$request['version'] = $args['-v'][0];
 		$request['nodes'] = $args['-n'];
 		break;
+	case 'switch':
+		$request['type'] = "switch";
+		$request['cluster'] = $args['-c'][0];
+		$request['version'] = $args['-v'][0];
+		break;
+	case 'rollback':
+		$request['type'] = "rollback";
+		$request['cluster'] = $args['-c'][0];
+		break;
 }
 
 $response = $client->send_request($request);
