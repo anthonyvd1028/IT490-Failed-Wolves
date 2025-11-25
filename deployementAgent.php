@@ -19,6 +19,18 @@ function switchDir($req)
         		exec($command);
         		echo "Restarted $type" . PHP_EOL;
 			break;
+		case "WEB":
+			$command = "bash {$newDir}setup/setup-web.sh $newDir";
+		        echo $command . PHP_EOL;
+        		exec($command);
+        		echo "Restarted $type" . PHP_EOL;
+			break;
+		case "DB":
+			$command = "bash {$newDir}setup/setup-db.sh $newDir";
+		        echo $command . PHP_EOL;
+        		exec($command);
+        		echo "Restarted $type" . PHP_EOL;
+			break;		
 	}
 	return;
 }
@@ -50,7 +62,13 @@ function pullChanges($req)
 			echo $command . PHP_EOL;
 			exec($command);
 			echo "Restarted $node" . PHP_EOL;
-		}
+		} elseif ($node == $type && $node == 'DB') {
+                        $command = "bash {$newDir}setup/setup-db.sh $newDir";
+                        echo $command . PHP_EOL;
+                        exec($command);
+                        echo "Restarted $node" . PHP_EOL;
+                }
+
 
 		#TODO: Add if statements for web, db, and agent
 	}

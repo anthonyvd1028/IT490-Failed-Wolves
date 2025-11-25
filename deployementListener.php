@@ -32,8 +32,9 @@ function rollback($req)
         {
                 case 'QA':
                         $QA->publish($push);
-                        break;
-        }
+			break;
+		#TODO: Add case for Prod
+	}
 
         return array('message' => "Version has been switched");
 }
@@ -138,7 +139,7 @@ function pushChanges($req)
 				$QA->publish($push);
 				break;
 			case 'Prod':
-
+				#TODO: Add Prod logic. Copy QA logic
 				break;
 		}
 
