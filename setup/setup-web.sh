@@ -2,4 +2,5 @@
 
 rootDir=$1
 
-echo "Web Restarted" >> "${rootDir}setup/webRestart"
+sudo rm -r /var/www/sample/
+sudo cp -r ${rootDir}sample /var/www/
