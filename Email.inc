@@ -32,6 +32,9 @@ function sendEmail($to, $subject, $body) {
 	try {
 		$mail = new PHPMailer(true);
 
+		$mail->SMTPDebug =2;
+		$mail->Debugoutput = 'error_log';
+
 		$mail->isSMTP();
 		$mail->Host = 'smtp.gmail.com';
 		$mail->SMTPAuth = true;
@@ -47,6 +50,15 @@ function sendEmail($to, $subject, $body) {
 		$mail->send();
 	} catch (Exception $e) {
 		echo "Could not send mail: {$mail->ErrorInfo}" . PHP_EOL;
+		echo "Exception message: " . $e->getMessage() . PHP_EOL;
 	}
 }
+
+if (sendEmail("9083613354@vtext.com", "", "Testing SMS. Your code is: 12345")) {
+	echo "Success" . PHP_EOL;
+} else {
+	echo "SMS could not be sent" . PHP_EOL;
+}
+
+
 ?>
