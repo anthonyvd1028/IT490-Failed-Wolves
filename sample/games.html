@@ -24,7 +24,7 @@
     window.onload = function () {
       let sessionId = sessionStorage.getItem("sessionId");
       if (!sessionId) {
-        window.location.href = "http://www.sample.com/login.html";
+        window.location.href = "./login.html";
       } else {
         var request = new XMLHttpRequest();
         request.open("POST","message.php",true);
@@ -35,7 +35,7 @@
               document.body.style.display = "block";
 	      displayGames();
             } else {
-              window.location.href = "http://www.sample.com/login.html";
+              window.location.href = "./login.html";
             }
           }               
         }
