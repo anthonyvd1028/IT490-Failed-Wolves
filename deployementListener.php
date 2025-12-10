@@ -59,6 +59,11 @@ function switchVersion($req)
                 exit(0);
         }
 
+	if ($results['Status'] == "Bad")
+	{
+		return array('message' => "Cannot switch to version($version), as it has been marked as 'Bad'");
+	}
+
 	$newDir = $results['Path'];
 
 	$push['type'] = "switch";
