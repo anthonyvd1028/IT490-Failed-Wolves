@@ -7,6 +7,7 @@ require_once('rabbitMQLib.inc');
 function rollback($req)
 {
 	global $QA;
+	global $PROD;
         $cluster = $req['cluster'];
 
         $mydb = new mysqli('127.0.0.1' , 'admin' , 'AdminPass123!' , 'IT_490');
@@ -33,6 +34,9 @@ function rollback($req)
                 case 'QA':
                         $QA->publish($push);
 			break;
+		case 'PROD':
+			$PROD->publish($push);
+			break;	
 		#TODO: Add case for Prod
 	}
 
@@ -42,6 +46,7 @@ function rollback($req)
 function switchVersion($req)
 {
 	global $QA;
+	global $PROD;
 	$version = $req['version'];
 	$cluster = $req['cluster'];
 
@@ -74,6 +79,9 @@ function switchVersion($req)
 		case 'QA':
 			$QA->publish($push);	
 			break;
+		case 'PROD':
+			$PROD->publish($push);
+			break;
 	}
 
 	return array('message' => "Version has been switched");
@@ -88,6 +96,7 @@ function pushChanges($req)
  	}
 
 	global $QA;
+	global $PROD;
 	$cluster = $req['cluster'];
 	try {
 		$push = array();
@@ -144,7 +153,51 @@ function pushChanges($req)
 				$QA->publish($push);
 				break;
 			case 'Prod':
-				#TODO: Add Prod logic. Copy QA logic
+				$query = "SELECT * FROM Dev WHERE Status = 'Good' ORDER BY VersionNumber DESC;";
+        			$results = $mydb->query($query);
+				$results = $results->fetch_assoc();
+				if ($mydb->errno != 0) {
+       					return array('message' => "There was an SQL error");
+       					exit(0);
+				}
+				$path = $results['Path'];
+					
+				$query = "SELECT * FROM Prod ORDER BY VersionNumber DESC;";
+                		$results = $mydb->query($query);
+               			$results = $results->fetch_assoc();
+                		if ($mydb->errno != 0) {
+                        		return array('message' => "There was an SQL error");
+                        		exit(0);
+                		}	
+
+                		if (!(isset($results['VersionNumber'])))
+                		{
+                	        	$version = 1;
+                		} else {
+                		        $version = $results['VersionNumber'] + 1;
+		                }
+
+				$newDir = "~/versions/$version/";			
+				$query = "INSERT INTO Prod (VersionNumber, Status, Path) VALUES ('$version', 'Pending', '$newDir');";
+                                $results = $mydb->query($query);
+                                if ($mydb->errno != 0) {
+                                        return array('message' => "There was an SQL error");
+                                        exit(0);
+                                }
+
+				$query = "SELECT * FROM Prod WHERE Status = 'Good' ORDER BY VersionNumber DESC;";
+                                $results = $mydb->query($query);
+                                $results = $results->fetch_assoc();
+                                if ($mydb->errno != 0) {
+                                        return array('message' => "There was an SQL error");
+                                        exit(0);
+                                }
+				$oldDir = $results['Path'];
+
+				$push['path'] = $path;
+				$push['newDir'] = $newDir;
+				$push['oldDir'] = $oldDir;
+				$PROD->publish($push);
 				break;
 		}
 
@@ -265,6 +318,7 @@ function requestProcessor($request)
 
 $server = new rabbitMQServer("deployement.ini","devdeployement");
 $QA = new rabbitMQClient("deployement.ini","deployementQA-WEB");
+$PROD = new rabbitMQClient("deployement.ini","deployementPROD-WEB");
 
 echo "testRabbitMQServer BEGIN".PHP_EOL;
 $server->process_requests('requestProcessor');

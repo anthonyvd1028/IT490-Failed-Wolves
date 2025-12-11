@@ -95,16 +95,32 @@ function requestProcessor($request)
 
 $hostname = exec("hostname");
 $type = explode("-", $hostname)[1];
+$cluster = explode("-", $hostname)[0];
 switch ($type)
 {	
 	case 'API':
-		$server = new rabbitMQServer("deployement.ini","deployementQA-API");
+		if ($cluster == "QA")
+		{
+			$server = new rabbitMQServer("deployement.ini","deployementQA-API");
+		} elseif ($cluster == "PROD") {
+			$server = new rabbitMQServer("deployement.ini","deployementPROD-API");
+		}	
 		break;
 	case 'WEB':
-		$server = new rabbitMQServer("deployement.ini","deployementQA-WEB");
+		if ($cluster == "QA")
+		{
+			$server = new rabbitMQServer("deployement.ini","deployementQA-WEB");
+		} elseif ($cluster == "PROD") {
+			$server = new rabbitMQServer("deployement.ini","deployementPROD-WEB");
+		}	
 		break;
 	case 'DB':
-		$server = new rabbitMQServer("deployement.ini","deployementQA-DB");
+		if ($cluster == "QA")
+		{
+			$server = new rabbitMQServer("deployement.ini","deployementQA-DB");
+		} elseif ($cluster == "PROD") {
+			$server = new rabbitMQServer("deployement.ini","deployementPROD-DB");
+		}	
 		break;
 }
 
