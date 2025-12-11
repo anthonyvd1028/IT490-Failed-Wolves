@@ -5,9 +5,9 @@ StartLimitIntervalSec=0
 
 [Service]
 Type=simple
-ExecStart=/home/jjr59/versions/1/testRabbitMQServer.php
+ExecStart=/home/avd8/versions/1/testRabbitMQServer.php
 
-User=jjr59
+User=avd8
 
 Restart=always
 RestartSec=1
