@@ -34,7 +34,7 @@ function rollback($req)
                 case 'QA':
                         $QA->publish($push);
 			break;
-		case 'PROD':
+		case 'Prod':
 			$PROD->publish($push);
 			break;	
 		#TODO: Add case for Prod
@@ -79,7 +79,7 @@ function switchVersion($req)
 		case 'QA':
 			$QA->publish($push);	
 			break;
-		case 'PROD':
+		case 'Prod':
 			$PROD->publish($push);
 			break;
 	}
