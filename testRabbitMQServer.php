@@ -321,6 +321,16 @@ function createSession($id, $username)
     return $new_token;
 }
 
+function sendSMS($number, $code){
+        $to = $number . '@vtext.com';
+        $body = "Your BetTracker OTP code is: " . $code;
+        if (sendEmail($to, "", $body)) {
+                echo "SMS sent successfully" . PHP_EOL;
+        } else {
+                echo "SMS could not be sent" . PHP_EOL;
+        }
+}
+
 function doLogin($username,$password)
 {
     $mydb = new mysqli('127.0.0.1' , 'admin' , 'AdminPass123!' , 'IT_490');
