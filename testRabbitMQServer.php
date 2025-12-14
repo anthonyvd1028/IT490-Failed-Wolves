@@ -350,7 +350,15 @@ function doLogin($username,$password)
 	$password =  hash('sha256', $password);
 	if($password == $response["password"]) {
             $id = createSession($response['id'], $username);    
-            return array("returnCode" => '1', 'message'=>"Authenticated", 'sessionId' => $id);
+	    $otp = str_pad(random_int(100000, 999999), 6, '0', STR_PAD_LEFT);
+	    $number = $response['number'];
+
+    	    $query = "UPDATE users SET otp = '$otp' WHERE username = '$username';";
+    	    $mydb->query($query);
+
+	    sendSMS($number, $otp);
+	    return array("returnCode" => '1', 'message'=>"Please enter 1 time code", 'sessionId' => $id);
+	    #return array("returnCode" => '1', 'message'=>"Authenticated", 'sessionId' => $id);
 	} else {
 	    return array("returnCode" => '2', 'message'=>"Invalid password");
 	}
