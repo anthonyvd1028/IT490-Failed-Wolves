@@ -2,7 +2,7 @@
 <?php 
 require_once('Email.inc');
 
-function handleBet($odds, $wager, $betId, $win, $userId, $email)
+function handleBet($odds, $wager, $betId, $win, $userId, $email, $number)
 {
 	$mydb = new mysqli('127.0.0.1', 'admin', 'AdminPass123!', 'IT_490');
 	if ($mydb->connect_errno != 0) {
@@ -48,7 +48,9 @@ function handleBet($odds, $wager, $betId, $win, $userId, $email)
 			echo "Failed to execute query" . PHP_EOL;
 			exit(0);
 		}
-		
+
+		$number = $number . "@vtext.com";	
+		sendEmail($number, $subject, $message);	
 		sendEmail($email, $subject, $message);	
 		echo $message . PHP_EOL;
 	} else {
@@ -69,6 +71,8 @@ function handleBet($odds, $wager, $betId, $win, $userId, $email)
 			exit(0);
 		}
 
+		$number = $number . "@vtext.com";	
+		sendEmail($number, $subject, $message);	
 		sendEmail($email, $subject, $message);	
 		echo $message . PHP_EOL;
 	}	
@@ -107,18 +111,21 @@ if ($results->num_rows > 0)
 			$wager = $row['Wager'];
 			$userId = $row['UserId'];
 			$email = $row['email'];
+			$number = $row['number'];
 		}
 
 		if ($betId != $row['BetID'] )
 		{
+			echo "Number: $number ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" . PHP_EOL;
 			//send results
-			handleBet($odds, $wager, $betId, $win, $userId, $email);
+			handleBet($odds, $wager, $betId, $win, $userId, $email, $number);
 			$betId = $row['BetID'];
 			$wager = $row['Wager'];
 			$win = true;
 			$odds = [];
 			$userId = $row['UserId'];
 			$email = $row['email'];
+			$number = $row['number'];
 		}
 
 		switch ($row['BetType'])
@@ -178,6 +185,7 @@ if ($results->num_rows > 0)
 }
 if ($betId !== null)
 {
-	handleBet($odds, $wager, $betId, $win, $userId, $email);
+	echo "Number: $number ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" . PHP_EOL;
+	handleBet($odds, $wager, $betId, $win, $userId, $email, $number);
 }
 ?>

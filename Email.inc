@@ -54,11 +54,5 @@ function sendEmail($to, $subject, $body) {
 	}
 }
 
-if (sendEmail("9083613354@vtext.com", "", "Testing SMS. Your code is: 12345")) {
-	echo "Success" . PHP_EOL;
-} else {
-	echo "SMS could not be sent" . PHP_EOL;
-}
-
 
 ?>

@@ -3,6 +3,7 @@
 require_once('path.inc');
 require_once('get_host_info.inc');
 require_once('rabbitMQLib.inc');
+require_once('Email.inc');
 
 function getGamesSportsbook($sportsbook)
 {	
@@ -328,7 +329,8 @@ function sendSMS($number, $code){
                 echo "SMS sent successfully" . PHP_EOL;
         } else {
                 echo "SMS could not be sent" . PHP_EOL;
-        }
+	}
+	return;
 }
 
 function doLogin($username,$password)
@@ -339,7 +341,7 @@ function doLogin($username,$password)
         exit(0);
     }
     echo "Succesfully connected to database".PHP_EOL;
-    $query = "SELECT password, id FROM users WHERE username='" . $username . "';";
+    $query = "SELECT password, id, number FROM users WHERE username='" . $username . "';";
     $response = $mydb->query($query);
     if ($mydb->errno != 0) {
         echo "failed to execute query:" . PHP_EOL;
