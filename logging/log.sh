@@ -40,12 +40,14 @@ done
 
 if [[ ! -d "/var/log/it490" ]]; then
 	sudo mkdir /var/log/it490
+	sudo chown $USER:$USER /var/log/it490 
 fi
 
 ip=$(hostname -I | grep -o -E "172\.29\.[0-9]+\.[0-9]+")
 sudo touch /var/log/it490/local-${ip}.log
 sudo touch /var/log/it490/local.log
-#sudo touch /var/log/it490/distributed.log
+sudo chown $USER:$USER /var/log/it490/local-${ip}.log
+sudo chown $USER:$USER /var/log/it490/local.log
 echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 echo "Done with setup"
 
@@ -66,7 +68,6 @@ while true; do
 	for machine in ${machines[@]}; do
 		machineIP=$(cut -d@ -f2 <<< "$machine")
 		if [[ "$machineIP" == "$ip" ]]; then
-			echo CONTINUEEE
 			continue
 		fi
 
