@@ -54,7 +54,7 @@ echo "Done with setup"
 while true; do
 	#TODO: append more logs into local.log
 	journalctl -q -u testRabbitMQServer.service -b | grep -Fv -f /var/log/it490/local.log | sudo tee -a /var/log/it490/local.log
-
+	sudo cat /var/log/apache2/error.log | grep -Fv -f /var/log/it490/local.log | sudo tee -a /var/log/it490/local.log
 
 	while IFS= read -r line; do
 		timestamp=$(date --iso-8601=seconds)
