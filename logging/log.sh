@@ -11,7 +11,7 @@ fi
 
 case "$1" in
 	dev)
-		machines=("")
+		machines=("avd8@172.29.21.212" "avd8@172.29.100.228")
 		;;
 	qa)
 		machines=("avd8@172.29.14.130")
@@ -33,7 +33,7 @@ fi
 
 echo
 
-for machine in $machines; do
+for machine in ${machines[@]}; do
 	echo "Copying ssh ID for $machine"
 	ssh-copy-id $machine
 done
@@ -44,36 +44,34 @@ fi
 
 ip=$(hostname -I | grep -o -E "172\.29\.[0-9]+\.[0-9]+")
 sudo touch /var/log/it490/local-${ip}.log
+sudo touch /var/log/it490/local.log
 #sudo touch /var/log/it490/distributed.log
 echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 echo "Done with setup"
 
-
 while true; do
 	#TODO: append more logs into local.log
-	journalctl -q -u testRabbitMQServer.service -b | grep -Fv -f /var/log/it490/local-${ip}.log | sudo tee -a /var/log/it490/local-${ip}.log
+	journalctl -q -u testRabbitMQServer.service -b | grep -Fv -f /var/log/it490/local.log | sudo tee -a /var/log/it490/local.log
 
-#	while IFS= read -r line; do
-#		timestamp=$(date --iso-8601=seconds)
-#		
-#		if ! grep -qF "$line" /var/log/it490/distributed.log; then
-#			echo "[${timestamp}][${ip}][${line}]" | sudo tee -a /var/log/it490/distributed.log
-#		fi
-#	done < "/var/log/it490/local.log"
 
-	#insert logic to sync my distributed.log with the other machines
-	for machine in $machines; do
-		machineIP=$(echo "$machine" | cut -d'@' -f2)
-		if [[ $ip == $machineIP ]];then
+	while IFS= read -r line; do
+		timestamp=$(date --iso-8601=seconds)
+		
+		if ! grep -qF "$line" /var/log/it490/local-${ip}.log; then
+			echo "[${timestamp}][${ip}][${line}]" | sudo tee -a /var/log/it490/local-${ip}.log
+		fi
+	done < "/var/log/it490/local.log"
+
+		
+	for machine in ${machines[@]}; do
+		machineIP=$(cut -d@ -f2 <<< "$machine")
+		if [[ "$machineIP" == "$ip" ]]; then
+			echo CONTINUEEE
 			continue
 		fi
-		
+
+		scp ${machine}:/var/log/it490/local-${machineIP}.log /var/log/it490/local-${machineIP}.log
 	done
-		
 
-
-
-
-#	sort /var/log/it490/distributed.log > /dev/null
-	sleep 1
+	sleep 10
 done
