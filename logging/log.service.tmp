@@ -1,0 +1,13 @@
+[Unit]
+Description=Distributed Logger
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+ExecStart=[PUT FILE PATH]
+
+User=[PUT USER]
+
+Restart=always
+RestartSec=1
