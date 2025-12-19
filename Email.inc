@@ -32,21 +32,27 @@ function sendEmail($to, $subject, $body) {
 	try {
 		$mail = new PHPMailer(true);
 
+		$mail->SMTPDebug =2;
+		$mail->Debugoutput = 'error_log';
+
 		$mail->isSMTP();
 		$mail->Host = 'smtp.gmail.com';
 		$mail->SMTPAuth = true;
-		$mail->Username = 'bettracker.it490@gmail.com';
+		$mail->Username = 'anthonyvd1028@gmail.com';
 		$mail->Password = getPassword();
 		$mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
 		$mail->Port = 587;
 
-		$mail->setFrom('bettracker.it490@gmail.com', 'No Reply');
+		$mail->setFrom('anthonyvd1028@gmail.com', 'No Reply');
 		$mail->addAddress($to);
 		$mail->Subject = $subject;
 		$mail->Body = $body;
 		$mail->send();
 	} catch (Exception $e) {
 		echo "Could not send mail: {$mail->ErrorInfo}" . PHP_EOL;
+		echo "Exception message: " . $e->getMessage() . PHP_EOL;
 	}
 }
+
+
 ?>

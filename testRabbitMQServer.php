@@ -5,6 +5,32 @@ require_once('get_host_info.inc');
 require_once('rabbitMQLib.inc');
 require_once('Email.inc');
 
+function checkOTP($request)
+{
+	$mydb = new mysqli('127.0.0.1' , 'admin' , 'AdminPass123!' , 'IT_490'); 
+        if ($mydb->connect_errno != 0) {
+                return array("returnCode" => '1' , "message" => "Database connection failed:" . $mydb->connect_error);
+        }
+
+	$token = $request['sessionId'];
+
+	$query = "SELECT otp FROM users LEFT JOIN sessions ON sessions.username = users.username WHERE session_token = '$token';";
+        $results = $mydb->query($query);
+        if ($mydb->errno != 0) {
+                echo "failed to execute query:" . PHP_EOL;
+                exit(0);
+        }
+
+        $otp = $results->fetch_assoc()['otp'];
+
+	if ($otp == $request['code'])
+	{
+		return array("message" => "OTP is correct", "valid" => true);
+	} else {
+		return array("message" => "OTP is incorrect", "valid" => false);
+	}	
+}
+
 function getGamesSportsbook($sportsbook)
 {	
 	$return = array('events' => array());
@@ -322,6 +348,17 @@ function createSession($id, $username)
     return $new_token;
 }
 
+function sendSMS($number, $code){
+        $to = $number . '@vtext.com';
+        $body = "Your BetTracker OTP code is: " . $code;
+        if (sendEmail($to, "", $body)) {
+                echo "SMS sent successfully" . PHP_EOL;
+        } else {
+                echo "SMS could not be sent" . PHP_EOL;
+	}
+	return;
+}
+
 function doLogin($username,$password)
 {
     $mydb = new mysqli('127.0.0.1' , 'admin' , 'AdminPass123!' , 'IT_490');
@@ -330,7 +367,7 @@ function doLogin($username,$password)
         exit(0);
     }
     echo "Succesfully connected to database".PHP_EOL;
-    $query = "SELECT password, id FROM users WHERE username='" . $username . "';";
+    $query = "SELECT password, id, number FROM users WHERE username='" . $username . "';";
     $response = $mydb->query($query);
     if ($mydb->errno != 0) {
         echo "failed to execute query:" . PHP_EOL;
@@ -341,7 +378,15 @@ function doLogin($username,$password)
 	$password =  hash('sha256', $password);
 	if($password == $response["password"]) {
             $id = createSession($response['id'], $username);    
-            return array("returnCode" => '1', 'message'=>"Authenticated", 'sessionId' => $id);
+	    $otp = str_pad(random_int(100000, 999999), 6, '0', STR_PAD_LEFT);
+	    $number = $response['number'];
+
+    	    $query = "UPDATE users SET otp = '$otp' WHERE username = '$username';";
+    	    $mydb->query($query);
+
+	    sendSMS($number, $otp);
+	    return array("returnCode" => '1', 'message'=>"Please enter 1 time code", 'sessionId' => $id);
+	    #return array("returnCode" => '1', 'message'=>"Authenticated", 'sessionId' => $id);
 	} else {
 	    return array("returnCode" => '2', 'message'=>"Invalid password");
 	}
@@ -648,6 +693,8 @@ function requestProcessor($request)
 	 return getWatchlist($request);
     case "getPortfolio":
 	  return getPortfolio($request['sessionId']);
+    case "sendSMSCode":
+          return checkOTP($request);
   }
   return array("returnCode" => '0', 'message'=>"Server received request and processed");
 }

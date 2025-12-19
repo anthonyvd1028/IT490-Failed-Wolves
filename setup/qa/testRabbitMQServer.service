@@ -1,0 +1,13 @@
+[Unit]
+Description=DB Listener
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+ExecStart=/home/avd8/versions/1/testRabbitMQServer.php
+
+User=avd8
+
+Restart=always
+RestartSec=1

@@ -92,6 +92,14 @@ case "getWatchlist":
 	$response = $client->send_request($rabbitRequest);
 	echo json_encode(array('watchlist' => $response['watchlist']));
 	break;
+case "sendSMSCode":
+	$rabbitRequest = array();
+        $rabbitRequest['type'] = "sendSMSCode";
+        $rabbitRequest['sessionId'] = $request["sessionId"];
+        $rabbitRequest['code'] = $request['code'];
+        $response = $client->send_request($rabbitRequest);
+        echo json_encode(array('message' => $response['message'], "valid" => $response['valid']));
+        break;
 }
 exit(0);
 ?> 
