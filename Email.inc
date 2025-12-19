@@ -38,12 +38,12 @@ function sendEmail($to, $subject, $body) {
 		$mail->isSMTP();
 		$mail->Host = 'smtp.gmail.com';
 		$mail->SMTPAuth = true;
-		$mail->Username = 'bettracker.it490@gmail.com';
+		$mail->Username = 'anthonyvd1028@gmail.com';
 		$mail->Password = getPassword();
 		$mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
 		$mail->Port = 587;
 
-		$mail->setFrom('bettracker.it490@gmail.com', 'No Reply');
+		$mail->setFrom('anthonyvd1028@gmail.com', 'No Reply');
 		$mail->addAddress($to);
 		$mail->Subject = $subject;
 		$mail->Body = $body;
