@@ -306,3 +306,20 @@ width: 30%
 height: auto;
 }
 
+.left, .right {
+	float:left;
+	width: 20%;
+}
+
+.main {
+	float:left;
+	width 60%;
+}
+
+@media screen and (max-width: 800px)
+	.left, .main, .right {
+		width: 100; 
+	}
+}
+
+
