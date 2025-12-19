@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<link rel="stylesheet" href="style.css">
+	</head>
+
+<script>
+	let sessionId = sessionStorage.getItem("sessionId");
+
+	function sendSMSCode() {
+        var code = document.getElementById("code").value;
+        var request = new XMLHttpRequest();
+        request.open("POST","message.php",true);
+        request.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+        request.onreadystatechange = function () {
+          if (this.readyState == 4 && this.status == 200) {
+            var valid = JSON.parse(this.responseText).valid;
+		var message = JSON.parse(this.responseText).message;
+		if (valid)
+	 	{
+			alert(message);
+			window.location.href = "./index.html";
+		} else {
+			alert(message);
+		}
+	}
+      };
+        request.send("type=sendSMSCode&code=" + code + "&sessionId=" + sessionId);
+    }
+
+</script>
+<body>
+  <nav class="navbar">
+    <h2>Welcome to BetTracker</h2>
+    <h1>
+    <ul class="nav-links">
+      <li><a href="login.html"class="active">Login</a></li>
+      <li><a href="registration.html">Register</a></li>
+    </ul>
+  </nav>
+
+  <div class="container">
+    <div class="card">
+      <h1>Please Enter Your OTP Code</h1>
+      <label for="code">OTP:</label>
+      <input type="code" id="code" name="code">
+      <button onclick="sendSMSCode()">Authenticate</button>
+      <div id="textResponse"></div>
+    </div>
+  </div>
+</body>
+</html>
+

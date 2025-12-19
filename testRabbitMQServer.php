@@ -5,6 +5,32 @@ require_once('get_host_info.inc');
 require_once('rabbitMQLib.inc');
 require_once('Email.inc');
 
+function checkOTP($request)
+{
+	$mydb = new mysqli('127.0.0.1' , 'admin' , 'AdminPass123!' , 'IT_490'); 
+        if ($mydb->connect_errno != 0) {
+                return array("returnCode" => '1' , "message" => "Database connection failed:" . $mydb->connect_error);
+        }
+
+	$token = $request['sessionId'];
+
+	$query = "SELECT otp FROM users LEFT JOIN sessions ON sessions.username = users.username WHERE session_token = '$token';";
+        $results = $mydb->query($query);
+        if ($mydb->errno != 0) {
+                echo "failed to execute query:" . PHP_EOL;
+                exit(0);
+        }
+
+        $otp = $results->fetch_assoc()['otp'];
+
+	if ($otp == $request['code'])
+	{
+		return array("message" => "OTP is correct", "valid" => true);
+	} else {
+		return array("message" => "OTP is incorrect", "valid" => false);
+	}	
+}
+
 function getGamesSportsbook($sportsbook)
 {	
 	$return = array('events' => array());
@@ -667,6 +693,8 @@ function requestProcessor($request)
 	 return getWatchlist($request);
     case "getPortfolio":
 	  return getPortfolio($request['sessionId']);
+    case "sendSMSCode":
+          return checkOTP($request);
   }
   return array("returnCode" => '0', 'message'=>"Server received request and processed");
 }
